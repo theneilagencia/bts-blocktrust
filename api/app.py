@@ -23,6 +23,14 @@ app.register_blueprint(panic_bp, url_prefix='/api')
 def health():
     return jsonify({'status': 'ok', 'service': 'BTS Blocktrust API'})
 
+@app.route('/api/init-db', methods=['POST'])
+def initialize_database():
+    try:
+        init_db()
+        return jsonify({'status': 'success', 'message': 'Database initialized successfully'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
 # Inicialização do banco de dados comentada temporariamente
 # @app.before_request
 # def before_first_request():
