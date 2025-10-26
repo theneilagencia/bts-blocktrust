@@ -1,0 +1,45 @@
+services:
+  - type: web
+    name: bts-blocktrust
+    env: python
+    region: oregon
+    buildCommand: |
+      pip install -r api/requirements.txt
+      cd /opt/render/project/src && pnpm install && pnpm build
+    startCommand: |
+      cd api && gunicorn app:app --bind 0.0.0.0:$PORT &
+      cd /opt/render/project/src && pnpm preview --host 0.0.0.0 --port 3000
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: SENDGRID_API_KEY
+        sync: false
+      - key: TOOLBLOX_MINT_IDENTITY_URL
+        sync: false
+      - key: TOOLBLOX_REGISTER_SIGNATURE_URL
+        sync: false
+      - key: TOOLBLOX_VERIFY_URL
+        sync: false
+      - key: TOOLBLOX_NETWORK
+        value: amoy
+      - key: SUMSUB_APP_TOKEN
+        sync: false
+      - key: SUMSUB_SECRET_KEY
+        sync: false
+      - key: FROM_EMAIL
+        value: help@btsglobalcorp.com
+      - key: ALERT_EMAILS
+        value: help@btsglobalcorp.com
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: NODE_VERSION
+        value: 22
+
+databases:
+  - name: bts-blocktrust-db
+    databaseName: bts_blocktrust
+    user: bts_user
+    region: oregon
+
