@@ -357,6 +357,11 @@ def kyc_webhook():
         
         request_body = request.get_data()
         
+        # Debug: log da assinatura
+        logger.info(f"Webhook - Signature recebida: {signature}")
+        logger.info(f"Webhook - Body length: {len(request_body)}")
+        logger.info(f"Webhook - Body (primeiros 100 chars): {request_body[:100]}")
+        
         if not verify_webhook_signature(request_body, signature):
             logger.warning("Assinatura inválida no webhook")
             return jsonify({'error': 'Assinatura inválida'}), 401

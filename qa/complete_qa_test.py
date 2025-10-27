@@ -16,7 +16,7 @@ from typing import Dict, List, Any
 # Configurações
 BASE_URL = "https://bts-blocktrust.onrender.com"
 API_URL = f"{BASE_URL}/api"
-SUMSUB_SECRET = os.getenv('SUMSUB_SECRET_KEY', 'HPuMPbFC5s1dgqbgDRIVJu5JP82eLgFc')
+SUMSUB_SECRET = os.getenv('SUMSUB_SECRET_KEY', 'HPuMPbrCSs1dgobgDRIVJu5JP82eLgFc')
 
 # Resultados
 results = {
