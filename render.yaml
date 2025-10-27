@@ -5,7 +5,10 @@ services:
     plan: starter
     region: oregon
     buildCommand: |
-      cd frontend && pnpm install && pnpm build
+      cd frontend
+      rm -rf node_modules .pnpm-store dist
+      pnpm install
+      pnpm build
       cd ..
       rm -rf backend/static
       cp -r frontend/dist backend/static
