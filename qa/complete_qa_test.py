@@ -281,7 +281,7 @@ if auth_token:
         headers=headers_auth,
         data={
             "wallet": "0x" + "2" * 40,
-            "proofCid": "Qm" + "a" * 44  # CID IPFS válido
+            "proof_cid": "Qm" + "a" * 44  # CID IPFS válido
         },
         test_name="Mint Identity", module="Blockchain"
     )
