@@ -6,6 +6,7 @@ echo "🚀 Building BTS Blocktrust..."
 # Build frontend
 echo "📦 Building frontend..."
 cd frontend
+rm -rf node_modules .pnpm-store dist
 pnpm install
 pnpm build
 cd ..
