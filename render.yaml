@@ -2,44 +2,29 @@ services:
   - type: web
     name: bts-blocktrust
     env: python
+    plan: starter
     region: oregon
     buildCommand: |
-      pip install -r api/requirements.txt
-      cd /opt/render/project/src && pnpm install && pnpm build
-    startCommand: |
-      cd api && gunicorn app:app --bind 0.0.0.0:$PORT &
-      cd /opt/render/project/src && pnpm preview --host 0.0.0.0 --port 3000
+      cd frontend && pnpm install && pnpm build
+      cd ../backend && pip install -r requirements.txt
+    startCommand: cd backend && python app.py
     envVars:
       - key: DATABASE_URL
         sync: false
       - key: JWT_SECRET
-        sync: false
+        generateValue: true
       - key: SENDGRID_API_KEY
         sync: false
       - key: TOOLBLOX_MINT_IDENTITY_URL
-        sync: false
+        value: "https://api.toolblox.net/run/0xbea959B61f62608eDDd40e1eB8888a42cfc573Ef"
       - key: TOOLBLOX_REGISTER_SIGNATURE_URL
-        sync: false
+        value: "https://api.toolblox.net/run/0xbb3862Ac621aaD9B54FE9C9884608e0F9991F772"
       - key: TOOLBLOX_VERIFY_URL
-        sync: false
-      - key: TOOLBLOX_NETWORK
-        value: amoy
+        value: "https://api.toolblox.net/run/0x5103f409300C5D2FBd746A9D96B5110cc3b599d2"
       - key: SUMSUB_APP_TOKEN
-        sync: false
+        value: "uKBKq1VVgbptORChz3E1RtDB.FuhXsZsUDD7eTyQe7WueKjAkDbuyJ9Fw"
       - key: SUMSUB_SECRET_KEY
-        sync: false
-      - key: FROM_EMAIL
-        value: help@btsglobalcorp.com
-      - key: ALERT_EMAILS
-        value: help@btsglobalcorp.com
-      - key: PYTHON_VERSION
-        value: 3.11.0
-      - key: NODE_VERSION
-        value: 22
-
-databases:
-  - name: bts-blocktrust-db
-    databaseName: bts_blocktrust
-    user: bts_user
-    region: oregon
+        value: "HPuMPbFC5s1dgqbgDRIVJu5JP82eLgFc"
+      - key: PORT
+        value: "10000"
 
