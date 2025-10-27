@@ -7,7 +7,7 @@ from api.routes.auth_routes import auth_bp
 from api.routes.proxy_routes import proxy_bp
 from api.routes.panic_routes import panic_bp
 
-app = Flask(__name__, static_folder="../frontend/dist", static_url_path="/")
+app = Flask(__name__, static_folder="static", static_url_path="/")
 CORS(app)
 
 # Register blueprints
