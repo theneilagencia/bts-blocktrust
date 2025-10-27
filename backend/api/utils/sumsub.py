@@ -257,7 +257,7 @@ def verify_webhook_signature(request_body, signature_header):
     
     Args:
         request_body: Corpo da requisição (bytes ou string)
-        signature_header: Header X-Payload-Digest
+        signature_header: Header X-Payload-Digest (formato: "sha256=hash" ou apenas "hash")
     
     Returns:
         Boolean indicando se a assinatura é válida
@@ -268,13 +268,18 @@ def verify_webhook_signature(request_body, signature_header):
     if isinstance(request_body, str):
         request_body = request_body.encode('utf-8')
     
+    # Remover prefixo "sha256=" se presente
+    received_signature = signature_header
+    if received_signature.startswith('sha256='):
+        received_signature = received_signature[7:]  # Remove "sha256="
+    
     expected_signature = hmac.new(
         SUMSUB_SECRET_KEY.encode('utf-8'),
         request_body,
         hashlib.sha256
     ).hexdigest()
     
-    return hmac.compare_digest(expected_signature, signature_header)
+    return hmac.compare_digest(expected_signature, received_signature)
 
 def parse_verification_status(status_data):
     """
