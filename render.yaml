@@ -4,15 +4,7 @@ services:
     env: python
     plan: starter
     region: oregon
-    buildCommand: |
-      cd frontend
-      rm -rf node_modules .pnpm-store dist
-      pnpm install
-      pnpm build
-      cd ..
-      rm -rf backend/static
-      cp -r frontend/dist backend/static
-      cd backend && pip install -r requirements.txt
+    buildCommand: bash build.sh
     startCommand: cd backend && python app.py
     envVars:
       - key: DATABASE_URL
