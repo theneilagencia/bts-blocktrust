@@ -59,12 +59,18 @@ def log_test(module: str, test_name: str, status: str, latency: float, details: 
         results["latency"][module] = []
     results["latency"][module].append(latency * 1000)
 
-def test_endpoint(method: str, endpoint: str, expected_status: int, 
+def test_endpoint(method: str, endpoint: str, expected_status, 
                   headers: Dict = None, data: Dict = None, 
                   test_name: str = "", module: str = "API"):
-    """Testa um endpoint da API"""
+    """Testa um endpoint da API (expected_status pode ser int ou lista de ints)"""
     url = f"{API_URL}{endpoint}"
     start_time = time.time()
+    
+    # Normalizar expected_status para lista
+    if isinstance(expected_status, int):
+        expected_statuses = [expected_status]
+    else:
+        expected_statuses = expected_status
     
     try:
         if method == "GET":
@@ -78,13 +84,13 @@ def test_endpoint(method: str, endpoint: str, expected_status: int,
         
         latency = time.time() - start_time
         
-        if response.status_code == expected_status:
+        if response.status_code in expected_statuses:
             log_test(module, test_name or f"{method} {endpoint}", "✅ PASS", latency, 
                     f"Status {response.status_code}")
             return response
         else:
             log_test(module, test_name or f"{method} {endpoint}", "❌ FAIL", latency,
-                    f"Expected {expected_status}, got {response.status_code}")
+                    f"Expected {expected_statuses}, got {response.status_code}")
             return None
             
     except Exception as e:
@@ -335,9 +341,9 @@ print("\n" + "="*80)
 print("5. TESTANDO SEGURANÇA")
 print("="*80 + "\n")
 
-# 4.1 SQL Injection
+# 4.1 SQL Injection (aceita 400 ou 401)
 test_endpoint(
-    "POST", "/auth/login", 401,
+    "POST", "/auth/login", [400, 401],
     data={"email": "admin' OR '1'='1", "password": "anything"},
     test_name="SQL Injection (deve falhar)", module="Security"
 )

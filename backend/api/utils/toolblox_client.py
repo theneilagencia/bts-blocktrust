@@ -39,14 +39,27 @@ class ToolbloxClient:
     """Cliente para integração com Toolblox API"""
     
     def __init__(self):
-        self.mint_url = TOOLBLOX_MINT_URL
-        self.signature_url = TOOLBLOX_SIGNATURE_URL
-        self.verify_url = TOOLBLOX_VERIFY_URL
-        self.network = TOOLBLOX_NETWORK
+        # Aplicar fallback para URLs com domínio antigo
+        self.mint_url = self._fix_url(TOOLBLOX_MINT_URL)
+        self.signature_url = self._fix_url(TOOLBLOX_SIGNATURE_URL)
+        self.verify_url = self._fix_url(TOOLBLOX_VERIFY_URL)
+        self.network = TOOLBLOX_NETWORK or 'polygon'
         self.webhook_url = WEBHOOK_URL
         
         # Validar configurações
         self._validate_config()
+    
+    def _fix_url(self, url: Optional[str]) -> Optional[str]:
+        """Corrige URLs com domínio antigo run.toolblox.net para api.toolblox.net"""
+        if not url:
+            return url
+        
+        # Substituir run.toolblox.net por api.toolblox.net/run
+        if 'run.toolblox.net' in url:
+            url = url.replace('run.toolblox.net', 'api.toolblox.net/run')
+            logger.info(f"✅ URL corrigida: {url}")
+        
+        return url
     
     def _validate_config(self):
         """Valida se as URLs estão configuradas corretamente"""
