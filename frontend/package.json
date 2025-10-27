@@ -1,6 +1,6 @@
 {
   "name": "bts-blocktrust",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Sistema descentralizado para registro, assinatura e verificação de documentos",
   "type": "module",
   "scripts": {
