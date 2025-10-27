@@ -20,17 +20,27 @@ services:
       - key: TOOLBLOX_REGISTER_SIGNATURE_URL
         value: "https://api.toolblox.net/run/0xbb3862Ac621aaD9B54FE9C9884608e0F9991F772"
       - key: TOOLBLOX_VERIFY_URL
-        value: "https://api.toolblox.net/run/0xC103f409300C5D2F8d746A9b96b5110c3b599a2"
+        value: "https://api.toolblox.net/run/0x5103f409300C5D2FBd746A9D96B5110cc3b599d2"
       - key: TOOLBLOX_NETWORK
-        value: "amoy"
+        value: "polygon"
       - key: ALERT_WEBHOOK_URL
         sync: false
       - key: SUMSUB_APP_TOKEN
-        value: "uKBKq1VVgbptORChz3E1RtDB.FuhXsZsUDD7eTyQe7WueKjAkDbuyJ9Fw"
+        value: "uKBKq1VVgbptORChz3E1RtDB.FuJXcZsUD07eTyQe7WueKjAkDbuyl9Fw"
       - key: SUMSUB_SECRET_KEY
-        value: "HPuMPbFC5s1dgqbgDRIVJu5JP82eLgFc"
+        value: "HPuMPbrCSs1dgobgDRIVJu5JP82eLgFc"
       - key: SUMSUB_LEVEL_NAME
         value: "basic-kyc-level"
+      - key: SMTP_HOST
+        value: "smtp.gmail.com"
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        value: "vinicius.debian@btsglobalcorp.com"
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_FROM
+        value: "vinicius.debian@btsglobalcorp.com"
       - key: PORT
         value: "10000"
 
