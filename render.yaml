@@ -24,7 +24,7 @@ services:
       - key: ALERT_WEBHOOK_URL
         sync: false
       - key: SUMSUB_APP_TOKEN
-        value: "uKBKq1VVgbptORChz3E1RtDB.FuJXcZsUD07eTyQe7WueKjAkDbuyl9Fw"
+        value: "uKBKq1VVgbptORChz3E1RtDB.FuhXzSuDD7eTyQe7WuekjAkDbuyl9Fw"
       - key: SUMSUB_SECRET_KEY
         value: "HPuMPbrCSs1dgobgDRIVJu5JP82eLgFc"
       - key: SUMSUB_LEVEL_NAME
