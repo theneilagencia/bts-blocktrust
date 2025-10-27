@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from api.auth import token_required
-from utils.mail import send_panic_email
-from utils.db import get_db_connection
+from api.utils.mail import send_panic_email
+from api.utils.db import get_db_connection
 
 panic_bp = Blueprint('panic', __name__)
 

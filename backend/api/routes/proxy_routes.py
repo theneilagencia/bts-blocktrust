@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 import requests
 import os
 from api.auth import token_required
-from utils.db import get_db_connection
+from api.utils.db import get_db_connection
 
 proxy_bp = Blueprint('proxy', __name__)
 
