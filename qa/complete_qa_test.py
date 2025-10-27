@@ -390,34 +390,67 @@ except Exception as e:
     latency = time.time() - start_time
     log_test("Frontend", "Página Inicial", "❌ FAIL", latency, str(e))
 
-# 5.2 Assets Estáticos
-for asset in ["/assets/index.css", "/assets/index.js"]:
-    start_time = time.time()
-    try:
-        response = requests.get(f"{BASE_URL}{asset}", timeout=10)
-        latency = time.time() - start_time
+# 5.2 Assets Estáticos (buscar nomes reais do HTML)
+start_time = time.time()
+try:
+    # Buscar index.html para extrair nomes de assets
+    html_response = requests.get(BASE_URL, timeout=10)
+    html_content = html_response.text
+    
+    import re
+    # Buscar arquivos CSS e JS no HTML
+    css_match = re.search(r'href="(/assets/index-[a-zA-Z0-9]+\.css)"', html_content)
+    js_match = re.search(r'src="(/assets/index-[a-zA-Z0-9]+\.js)"', html_content)
+    
+    assets_found = []
+    if css_match:
+        assets_found.append(("CSS", css_match.group(1)))
+    if js_match:
+        assets_found.append(("JS", js_match.group(1)))
+    
+    latency = time.time() - start_time
+    
+    if assets_found:
+        # Testar cada asset encontrado
+        for asset_type, asset_path in assets_found:
+            asset_start = time.time()
+            try:
+                asset_response = requests.get(f"{BASE_URL}{asset_path}", timeout=10)
+                asset_latency = time.time() - asset_start
+                
+                if asset_response.status_code == 200:
+                    log_test("Frontend", f"Asset {asset_type}", "✅ PASS", asset_latency, f"Carregado: {asset_path}")
+                else:
+                    log_test("Frontend", f"Asset {asset_type}", "❌ FAIL", asset_latency, f"Status {asset_response.status_code}")
+            except Exception as e:
+                asset_latency = time.time() - asset_start
+                log_test("Frontend", f"Asset {asset_type}", "❌ FAIL", asset_latency, str(e))
+    else:
+        log_test("Frontend", "Assets", "⚠️ WARN", latency, "Nenhum asset encontrado no HTML")
         
-        if response.status_code == 200:
-            log_test("Frontend", f"Asset {asset}", "✅ PASS", latency, "Carregado")
-        else:
-            log_test("Frontend", f"Asset {asset}", "⚠️ WARN", latency, f"Status {response.status_code}")
-    except Exception as e:
-        latency = time.time() - start_time
-        log_test("Frontend", f"Asset {asset}", "⚠️ WARN", latency, str(e))
+except Exception as e:
+    latency = time.time() - start_time
+    log_test("Frontend", "Assets", "❌ FAIL", latency, str(e))
 
 # 5.3 Logo
 start_time = time.time()
 try:
-    response = requests.get(f"{BASE_URL}/blocktrust.png", timeout=10)
-    latency = time.time() - start_time
+    # Tentar logo.png primeiro, depois logo-black.png
+    logo_found = False
+    for logo_path in ["/logo.png", "/logo-black.png"]:
+        response = requests.get(f"{BASE_URL}{logo_path}", timeout=10)
+        if response.status_code == 200:
+            latency = time.time() - start_time
+            log_test("Frontend", "Logo", "✅ PASS", latency, f"Imagem carregada: {logo_path}")
+            logo_found = True
+            break
     
-    if response.status_code == 200:
-        log_test("Frontend", "Logo", "✅ PASS", latency, "Imagem carregada")
-    else:
-        log_test("Frontend", "Logo", "⚠️ WARN", latency, f"Status {response.status_code}")
+    if not logo_found:
+        latency = time.time() - start_time
+        log_test("Frontend", "Logo", "❌ FAIL", latency, "Nenhum logo encontrado")
 except Exception as e:
     latency = time.time() - start_time
-    log_test("Frontend", "Logo", "⚠️ WARN", latency, str(e))
+    log_test("Frontend", "Logo", "❌ FAIL", latency, str(e))
 
 # ============================================================================
 # 6. RELATÓRIO FINAL

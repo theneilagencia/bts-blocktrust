@@ -279,13 +279,6 @@ def verify_webhook_signature(request_body, signature_header):
         hashlib.sha256
     ).hexdigest()
     
-    # Debug logs
-    logger.info(f"Verify - Secret length: {len(SUMSUB_SECRET_KEY)}")
-    logger.info(f"Verify - Body length: {len(request_body)}")
-    logger.info(f"Verify - Expected signature: {expected_signature}")
-    logger.info(f"Verify - Received signature: {received_signature}")
-    logger.info(f"Verify - Match: {hmac.compare_digest(expected_signature, received_signature)}")
-    
     return hmac.compare_digest(expected_signature, received_signature)
 
 def parse_verification_status(status_data):
