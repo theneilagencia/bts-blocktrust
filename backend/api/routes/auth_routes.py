@@ -1,9 +1,36 @@
 from flask import Blueprint, request, jsonify
 import bcrypt
+import re
 from api.auth import generate_token, token_required
 from api.utils.db import get_db_connection
 
 auth_bp = Blueprint('auth', __name__)
+
+def sanitize_email(email):
+    """
+    Sanitiza email removendo caracteres perigosos (XSS)
+    
+    Args:
+        email: Email a ser sanitizado
+    
+    Returns:
+        Email sanitizado ou None se inválido
+    """
+    if not email:
+        return None
+    
+    # Remove espaços em branco
+    email = email.strip()
+    
+    # Verifica se contém tags HTML ou scripts
+    if re.search(r'<[^>]+>', email):
+        return None
+    
+    # Valida formato básico de email
+    if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
+        return None
+    
+    return email.lower()
 
 @auth_bp.route('/register', methods=['POST'])
 def register():
@@ -13,6 +40,11 @@ def register():
     
     if not email or not password:
         return jsonify({'error': 'Email e senha são obrigatórios'}), 400
+    
+    # Sanitizar email (proteção XSS)
+    email = sanitize_email(email)
+    if not email:
+        return jsonify({'error': 'Email inválido ou contém caracteres não permitidos'}), 400
     
     conn = get_db_connection()
     cur = conn.cursor()
@@ -54,6 +86,11 @@ def login():
     
     if not email or not password:
         return jsonify({'error': 'Email e senha são obrigatórios'}), 400
+    
+    # Sanitizar email (proteção XSS)
+    email = sanitize_email(email)
+    if not email:
+        return jsonify({'error': 'Email inválido ou contém caracteres não permitidos'}), 400
     
     conn = get_db_connection()
     cur = conn.cursor()

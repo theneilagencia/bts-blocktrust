@@ -48,11 +48,19 @@ def mint_identity(payload):
 def register_signature(payload):
     """Endpoint para registro de assinatura via Toolblox"""
     data = request.json
-    doc_hash = data.get('hash')
+    doc_hash = data.get('hash') or data.get('documentHash')
     signer = data.get('signer')
     
     if not doc_hash or not signer:
         return jsonify({'error': 'Hash e signer são obrigatórios'}), 400
+    
+    # Normalizar hash (adicionar 0x se necessário)
+    if not doc_hash.startswith('0x'):
+        doc_hash = '0x' + doc_hash.strip().lower()
+    
+    # Validar comprimento (66 caracteres: 0x + 64 hex)
+    if len(doc_hash) != 66:
+        return jsonify({'error': 'Hash inválido (deve ter 64 caracteres hexadecimais)'}), 400
     
     try:
         # Usar o novo cliente Toolblox com retry logic
@@ -84,10 +92,18 @@ def register_signature(payload):
 def verify_document(payload):
     """Endpoint para verificação de documento via Toolblox"""
     data = request.json
-    doc_hash = data.get('hash')
+    doc_hash = data.get('hash') or data.get('documentHash')
     
     if not doc_hash:
         return jsonify({'error': 'Hash é obrigatório'}), 400
+    
+    # Normalizar hash (adicionar 0x se necessário)
+    if not doc_hash.startswith('0x'):
+        doc_hash = '0x' + doc_hash.strip().lower()
+    
+    # Validar comprimento (66 caracteres: 0x + 64 hex)
+    if len(doc_hash) != 66:
+        return jsonify({'error': 'Hash inválido (deve ter 64 caracteres hexadecimais)'}), 400
     
     try:
         # Usar o novo cliente Toolblox com retry logic

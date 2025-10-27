@@ -13,8 +13,47 @@ logger = logging.getLogger(__name__)
 
 SUMSUB_APP_TOKEN = os.getenv('SUMSUB_APP_TOKEN')
 SUMSUB_SECRET_KEY = os.getenv('SUMSUB_SECRET_KEY')
+SUMSUB_WEBHOOK_SECRET = os.getenv('SUMSUB_WEBHOOK_SECRET', SUMSUB_SECRET_KEY)
 SUMSUB_BASE_URL = 'https://api.sumsub.com'
 SUMSUB_LEVEL_NAME = os.getenv('SUMSUB_LEVEL_NAME', 'basic-kyc-level')
+
+def validate_credentials():
+    """
+    Valida se as credenciais do Sumsub estão configuradas
+    
+    Returns:
+        Tuple (bool, str): (is_valid, error_message)
+    """
+    if not SUMSUB_APP_TOKEN:
+        return False, "SUMSUB_APP_TOKEN não configurado"
+    if not SUMSUB_SECRET_KEY:
+        return False, "SUMSUB_SECRET_KEY não configurado"
+    return True, None
+
+def retry_request(func, max_retries=3, delays=[2, 4, 8]):
+    """
+    Executa uma função com retry e backoff exponencial
+    
+    Args:
+        func: Função a ser executada
+        max_retries: Número máximo de tentativas
+        delays: Lista de delays entre tentativas (em segundos)
+    
+    Returns:
+        Resultado da função ou None em caso de falha
+    """
+    for attempt in range(max_retries):
+        try:
+            return func()
+        except Exception as e:
+            logger.error(f"Tentativa {attempt + 1}/{max_retries} falhou: {str(e)}")
+            if attempt < max_retries - 1:
+                delay = delays[attempt] if attempt < len(delays) else delays[-1]
+                logger.info(f"Aguardando {delay}s antes da próxima tentativa...")
+                time.sleep(delay)
+            else:
+                logger.error(f"Todas as {max_retries} tentativas falharam")
+                raise
 
 def generate_signature(method, url, body='', ts=None):
     """

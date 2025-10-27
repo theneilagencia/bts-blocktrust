@@ -11,7 +11,8 @@ from api.utils.sumsub import (
     verify_webhook_signature,
     parse_verification_status,
     is_kyc_approved,
-    get_liveness_check_status
+    get_liveness_check_status,
+    validate_credentials
 )
 from api.utils.db import get_db_connection
 import logging
@@ -30,6 +31,12 @@ def init_kyc(current_user):
         JSON com access token para o SDK do Sumsub
     """
     try:
+        # Valida credenciais do Sumsub
+        is_valid, error_msg = validate_credentials()
+        if not is_valid:
+            logger.error(f"Credenciais Sumsub inválidas: {error_msg}")
+            return jsonify({'error': 'Serviço KYC temporariamente indisponível'}), 503
+        
         user_id = current_user['user_id']
         user_email = current_user['email']
         
