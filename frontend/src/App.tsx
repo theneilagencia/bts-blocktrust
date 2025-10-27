@@ -6,6 +6,7 @@ import Dashboard from './app/Dashboard'
 import RegisterDoc from './app/RegisterDoc'
 import VerifyDoc from './app/VerifyDoc'
 import Admin from './app/Admin'
+import { KYCVerification } from './app/KYCVerification'
 import { AuthProvider, useAuth } from './lib/auth'
 import Toaster from './components/Toaster'
 
@@ -31,6 +32,7 @@ function App() {
           <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
           <Route path="/registrar" element={<PrivateRoute><RegisterDoc /></PrivateRoute>} />
           <Route path="/verificar" element={<PrivateRoute><VerifyDoc /></PrivateRoute>} />
+          <Route path="/kyc" element={<PrivateRoute><KYCVerification /></PrivateRoute>} />
           <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
         </Routes>
       </BrowserRouter>

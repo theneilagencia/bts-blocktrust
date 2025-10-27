@@ -18,6 +18,10 @@ def init_db():
             email VARCHAR(255) UNIQUE NOT NULL,
             password_hash VARCHAR(255) NOT NULL,
             role VARCHAR(50) DEFAULT 'user',
+            applicant_id VARCHAR(255),
+            kyc_status VARCHAR(50) DEFAULT 'not_started',
+            kyc_updated_at TIMESTAMP,
+            sumsub_data TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')

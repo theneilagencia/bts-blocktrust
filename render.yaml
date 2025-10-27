@@ -29,6 +29,8 @@ services:
         value: "uKBKq1VVgbptORChz3E1RtDB.FuhXsZsUDD7eTyQe7WueKjAkDbuyJ9Fw"
       - key: SUMSUB_SECRET_KEY
         value: "HPuMPbFC5s1dgqbgDRIVJu5JP82eLgFc"
+      - key: SUMSUB_LEVEL_NAME
+        value: "basic-kyc-level"
       - key: PORT
         value: "10000"
 

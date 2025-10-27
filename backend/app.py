@@ -6,6 +6,7 @@ import os
 from api.routes.auth_routes import auth_bp
 from api.routes.proxy_routes import proxy_bp
 from api.routes.panic_routes import panic_bp
+from api.routes.kyc_routes import kyc_bp
 
 app = Flask(__name__, static_folder="static", static_url_path="/")
 CORS(app)
@@ -14,6 +15,7 @@ CORS(app)
 app.register_blueprint(auth_bp, url_prefix='/api/auth')
 app.register_blueprint(proxy_bp, url_prefix='/api/proxy')
 app.register_blueprint(panic_bp, url_prefix='/api/panic')
+app.register_blueprint(kyc_bp, url_prefix='/api/kyc')
 
 # Health check
 @app.route('/api/health')
