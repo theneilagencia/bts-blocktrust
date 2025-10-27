@@ -20,7 +20,7 @@ services:
       - key: TOOLBLOX_REGISTER_SIGNATURE_URL
         value: "https://api.toolblox.net/run/0xbb3862Ac621aaD9B54FE9C9884608e0F9991F772"
       - key: TOOLBLOX_VERIFY_URL
-        value: "https://api.toolblox.net/run/0x5103f409300C5D2FBd746A9D96B5110cc3b599d2"
+        value: "https://api.toolblox.net/run/0xC103f409300C5D2F8d746A9b96b5110c3b599a2"
       - key: TOOLBLOX_NETWORK
         value: "amoy"
       - key: ALERT_WEBHOOK_URL
