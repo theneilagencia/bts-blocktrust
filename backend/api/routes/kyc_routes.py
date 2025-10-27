@@ -30,7 +30,7 @@ def init_kyc(current_user):
         JSON com access token para o SDK do Sumsub
     """
     try:
-        user_id = current_user['id']
+        user_id = current_user['user_id']
         user_email = current_user['email']
         
         # Verifica se usuário já tem KYC em andamento
@@ -104,7 +104,7 @@ def get_kyc_status(current_user):
         JSON com status do KYC
     """
     try:
-        user_id = current_user['id']
+        user_id = current_user['user_id']
         
         conn = get_db_connection()
         cur = conn.cursor()
@@ -167,7 +167,7 @@ def get_liveness_status(current_user):
         JSON com status do liveness check
     """
     try:
-        user_id = current_user['id']
+        user_id = current_user['user_id']
         
         conn = get_db_connection()
         cur = conn.cursor()
@@ -273,7 +273,7 @@ def get_kyc_data(current_user):
         if current_user.get('role') != 'admin':
             return jsonify({'error': 'Acesso negado'}), 403
         
-        user_id = current_user['id']
+        user_id = current_user['user_id']
         
         conn = get_db_connection()
         cur = conn.cursor()

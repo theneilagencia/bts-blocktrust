@@ -1,0 +1,232 @@
+{
+  "timestamp": "2025-10-27T10:50:53.611560",
+  "tests": [
+    {
+      "module": "Backend",
+      "test": "Health Check",
+      "status": "\u2705 PASS",
+      "latency_ms": 163.8,
+      "details": "Status 200",
+      "timestamp": "2025-10-27T10:50:53.775436"
+    },
+    {
+      "module": "Auth",
+      "test": "Registro de Usu\u00e1rio",
+      "status": "\u2705 PASS",
+      "latency_ms": 664.82,
+      "details": "Status 201",
+      "timestamp": "2025-10-27T10:50:54.441305"
+    },
+    {
+      "module": "Auth",
+      "test": "Login de Usu\u00e1rio",
+      "status": "\u2705 PASS",
+      "latency_ms": 632.9,
+      "details": "Status 200",
+      "timestamp": "2025-10-27T10:50:55.074327"
+    },
+    {
+      "module": "Auth",
+      "test": "Login Inv\u00e1lido (deve falhar)",
+      "status": "\u2705 PASS",
+      "latency_ms": 701.01,
+      "details": "Status 401",
+      "timestamp": "2025-10-27T10:50:55.776523"
+    },
+    {
+      "module": "Auth",
+      "test": "Acesso sem Token (deve falhar)",
+      "status": "\u2705 PASS",
+      "latency_ms": 212.72,
+      "details": "Status 401",
+      "timestamp": "2025-10-27T10:50:55.990501"
+    },
+    {
+      "module": "Auth",
+      "test": "Token Inv\u00e1lido (deve falhar)",
+      "status": "\u2705 PASS",
+      "latency_ms": 386.33,
+      "details": "Status 401",
+      "timestamp": "2025-10-27T10:50:56.378645"
+    },
+    {
+      "module": "KYC",
+      "test": "Inicializar KYC",
+      "status": "\u274c FAIL",
+      "latency_ms": 192.55,
+      "details": "Expected 200, got 500",
+      "timestamp": "2025-10-27T10:50:56.572562"
+    },
+    {
+      "module": "KYC",
+      "test": "Consultar Status KYC",
+      "status": "\u274c FAIL",
+      "latency_ms": 397.15,
+      "details": "Expected 200, got 500",
+      "timestamp": "2025-10-27T10:50:56.971869"
+    },
+    {
+      "module": "KYC",
+      "test": "Consultar Liveness Status",
+      "status": "\u274c FAIL",
+      "latency_ms": 190.27,
+      "details": "Expected 200, got 500",
+      "timestamp": "2025-10-27T10:50:57.163483"
+    },
+    {
+      "module": "KYC",
+      "test": "Webhook Sumsub (simulado)",
+      "status": "\u274c FAIL",
+      "latency_ms": 178.16,
+      "details": "Expected 200, got 401",
+      "timestamp": "2025-10-27T10:50:57.343156"
+    },
+    {
+      "module": "Security",
+      "test": "Webhook sem Assinatura (deve falhar)",
+      "status": "\u2705 PASS",
+      "latency_ms": 186.82,
+      "details": "Status 401",
+      "timestamp": "2025-10-27T10:50:57.531121"
+    },
+    {
+      "module": "Security",
+      "test": "Webhook com Assinatura Inv\u00e1lida (deve falhar)",
+      "status": "\u2705 PASS",
+      "latency_ms": 174.13,
+      "details": "Status 401",
+      "timestamp": "2025-10-27T10:50:57.706382"
+    },
+    {
+      "module": "Blockchain",
+      "test": "Verificar Documento",
+      "status": "\u274c FAIL",
+      "latency_ms": 179.4,
+      "details": "Expected 200, got 400",
+      "timestamp": "2025-10-27T10:50:57.886964"
+    },
+    {
+      "module": "Blockchain",
+      "test": "Registrar Assinatura",
+      "status": "\u274c FAIL",
+      "latency_ms": 184.44,
+      "details": "Expected 200, got 400",
+      "timestamp": "2025-10-27T10:50:58.072559"
+    },
+    {
+      "module": "Blockchain",
+      "test": "Mint Identity",
+      "status": "\u274c FAIL",
+      "latency_ms": 372.81,
+      "details": "Expected 200, got 400",
+      "timestamp": "2025-10-27T10:50:58.446503"
+    },
+    {
+      "module": "Security",
+      "test": "SQL Injection (deve falhar)",
+      "status": "\u2705 PASS",
+      "latency_ms": 377.94,
+      "details": "Status 401",
+      "timestamp": "2025-10-27T10:50:58.825891"
+    },
+    {
+      "module": "Security",
+      "test": "XSS no Email (deve falhar)",
+      "status": "\u274c FAIL",
+      "latency_ms": 649.01,
+      "details": "Expected 400, got 201",
+      "timestamp": "2025-10-27T10:50:59.476073"
+    },
+    {
+      "module": "Security",
+      "test": "Registro sem Senha (deve falhar)",
+      "status": "\u2705 PASS",
+      "latency_ms": 407.18,
+      "details": "Status 400",
+      "timestamp": "2025-10-27T10:50:59.884370"
+    },
+    {
+      "module": "Security",
+      "test": "Login sem Email (deve falhar)",
+      "status": "\u2705 PASS",
+      "latency_ms": 230.63,
+      "details": "Status 400",
+      "timestamp": "2025-10-27T10:51:00.116136"
+    },
+    {
+      "module": "Frontend",
+      "test": "P\u00e1gina Inicial",
+      "status": "\u2705 PASS",
+      "latency_ms": 226.23,
+      "details": "HTML carregado",
+      "timestamp": "2025-10-27T10:51:00.343559"
+    },
+    {
+      "module": "Frontend",
+      "test": "Asset /assets/index.css",
+      "status": "\u26a0\ufe0f WARN",
+      "latency_ms": 182.24,
+      "details": "Status 404",
+      "timestamp": "2025-10-27T10:51:00.525868"
+    },
+    {
+      "module": "Frontend",
+      "test": "Asset /assets/index.js",
+      "status": "\u26a0\ufe0f WARN",
+      "latency_ms": 188.8,
+      "details": "Status 404",
+      "timestamp": "2025-10-27T10:51:00.714730"
+    },
+    {
+      "module": "Frontend",
+      "test": "Logo",
+      "status": "\u26a0\ufe0f WARN",
+      "latency_ms": 240.75,
+      "details": "Status 404",
+      "timestamp": "2025-10-27T10:51:00.955551"
+    }
+  ],
+  "summary": {
+    "total": 23,
+    "passed": 12,
+    "failed": 8,
+    "warnings": 3
+  },
+  "latency": {
+    "Backend": [
+      163.79761695861816
+    ],
+    "Auth": [
+      664.8242473602295,
+      632.8978538513184,
+      701.0061740875244,
+      212.71872520446777,
+      386.33012771606445
+    ],
+    "KYC": [
+      192.55423545837402,
+      397.1529006958008,
+      190.26851654052734,
+      178.1594753265381
+    ],
+    "Security": [
+      186.8150234222412,
+      174.12519454956055,
+      377.93946266174316,
+      649.0051746368408,
+      407.1824550628662,
+      230.63015937805176
+    ],
+    "Blockchain": [
+      179.3994903564453,
+      184.44490432739258,
+      372.80774116516113
+    ],
+    "Frontend": [
+      226.2265682220459,
+      182.23881721496582,
+      188.7974739074707,
+      240.75055122375488
+    ]
+  }
+}
