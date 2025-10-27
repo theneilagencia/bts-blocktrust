@@ -21,8 +21,7 @@ export default function Layout({ children }: LayoutProps) {
         <div className="container-custom">
           <div className="flex items-center justify-between h-16">
             <Link to="/" className="flex items-center space-x-3">
-              <Shield className="w-8 h-8" />
-              <span className="font-display text-xl font-bold">BTS Blocktrust</span>
+              <img src="/logo.png" alt="BTS Blocktrust" className="h-8" />
             </Link>
             
             {user && (
@@ -61,7 +60,7 @@ export default function Layout({ children }: LayoutProps) {
       
       <footer className="bg-brand-neutral text-white py-6 mt-12">
         <div className="container-custom text-center">
-          <p>&copy; 2024 BTS Blocktrust. Todos os direitos reservados.</p>
+          <p>2025 BTS Global Corp © Todos os direitos reservados</p>
           <p className="text-sm text-gray-400 mt-2">Sistema descentralizado de registro blockchain</p>
         </div>
       </footer>

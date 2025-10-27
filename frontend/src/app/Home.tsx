@@ -8,8 +8,7 @@ export default function Home() {
       <nav className="container-custom py-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <Shield className="w-10 h-10" />
-            <span className="font-display text-2xl font-bold">BTS Blocktrust</span>
+            <img src="/logo.png" alt="BTS Blocktrust" className="h-10" />
           </div>
           <div className="space-x-4">
             <Link to="/login">
@@ -67,7 +66,7 @@ export default function Home() {
 
       <footer className="container-custom py-8 mt-20 border-t border-white/20">
         <p className="text-center text-gray-400">
-          &copy; 2024 BTS Blocktrust. Todos os direitos reservados.
+          2025 BTS Global Corp © Todos os direitos reservados
         </p>
       </footer>
     </div>
