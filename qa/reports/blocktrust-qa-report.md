@@ -1,6 +1,6 @@
 # Relatório de QA - BTS Blocktrust
 
-**Data:** 2025-10-27T11:48:06.037602
+**Data:** 2025-10-27T16:18:08.137526
 
 ## Resumo Executivo
 
@@ -14,169 +14,169 @@
 
 | Módulo | Latência Média | Status |
 |--------|----------------|--------|
-| Backend | 210.28ms | ✅ OK |
-| Auth | 526.99ms | ⚠️ Alto |
-| KYC | 209.56ms | ✅ OK |
-| Security | 211.32ms | ✅ OK |
-| Blockchain | 4263.30ms | ⚠️ Alto |
-| Failsafe | 320.81ms | ✅ OK |
-| Frontend | 179.08ms | ✅ OK |
+| Backend | 241.81ms | ✅ OK |
+| Auth | 510.11ms | ⚠️ Alto |
+| KYC | 267.43ms | ✅ OK |
+| Security | 278.98ms | ✅ OK |
+| Blockchain | 4227.94ms | ⚠️ Alto |
+| Failsafe | 291.45ms | ✅ OK |
+| Frontend | 210.65ms | ✅ OK |
 
 ## Detalhes dos Testes
 
 ### Backend - Health Check
 
 - **Status:** ✅ PASS
-- **Latência:** 210.28ms
+- **Latência:** 241.81ms
 - **Detalhes:** Status 200
 
 ### Auth - Registro de Usuário
 
 - **Status:** ✅ PASS
-- **Latência:** 716.91ms
+- **Latência:** 660.83ms
 - **Detalhes:** Status 201
 
 ### Auth - Login de Usuário
 
 - **Status:** ✅ PASS
-- **Latência:** 681.11ms
+- **Latência:** 822.82ms
 - **Detalhes:** Status 200
 
 ### Auth - Login Inválido (deve falhar)
 
 - **Status:** ✅ PASS
-- **Latência:** 693.98ms
+- **Latência:** 616.87ms
 - **Detalhes:** Status 401
 
 ### Auth - Acesso sem Token (deve falhar)
 
 - **Status:** ✅ PASS
-- **Latência:** 188.58ms
+- **Latência:** 211.55ms
 - **Detalhes:** Status 401
 
 ### Auth - Token Inválido (deve falhar)
 
 - **Status:** ✅ PASS
-- **Latência:** 354.39ms
+- **Latência:** 238.46ms
 - **Detalhes:** Status 401
 
 ### KYC - Inicializar KYC
 
 - **Status:** ❌ FAIL
-- **Latência:** 249.34ms
+- **Latência:** 186.77ms
 - **Detalhes:** Expected 200, got 500
 
 ### KYC - Consultar Status KYC
 
 - **Status:** ❌ FAIL
-- **Latência:** 205.93ms
+- **Latência:** 201.39ms
 - **Detalhes:** Expected 200, got 500
 
 ### KYC - Consultar Liveness Status
 
 - **Status:** ❌ FAIL
-- **Latência:** 196.35ms
+- **Latência:** 489.65ms
 - **Detalhes:** Expected 200, got 500
 
 ### KYC - Webhook Sumsub (simulado)
 
 - **Status:** ❌ FAIL
-- **Latência:** 186.63ms
+- **Latência:** 191.93ms
 - **Detalhes:** Expected 200, got 401
 
 ### Security - Webhook sem Assinatura (deve falhar)
 
 - **Status:** ✅ PASS
-- **Latência:** 168.79ms
+- **Latência:** 180.39ms
 - **Detalhes:** Status 401
 
 ### Security - Webhook com Assinatura Inválida (deve falhar)
 
 - **Status:** ✅ PASS
-- **Latência:** 190.39ms
+- **Latência:** 230.37ms
 - **Detalhes:** Status 401
 
 ### Blockchain - Verificar Documento
 
 - **Status:** ❌ FAIL
-- **Latência:** 6422.19ms
+- **Latência:** 6228.98ms
 - **Detalhes:** Expected 200, got 500
 
 ### Blockchain - Registrar Assinatura
 
 - **Status:** ❌ FAIL
-- **Latência:** 6183.51ms
+- **Latência:** 6216.09ms
 - **Detalhes:** Expected 200, got 500
 
 ### Blockchain - Mint Identity
 
 - **Status:** ❌ FAIL
-- **Latência:** 184.21ms
+- **Latência:** 238.77ms
 - **Detalhes:** Expected 200, got 400
 
 ### Failsafe - Ativar Botão de Pânico
 
 - **Status:** ✅ PASS
-- **Latência:** 257.48ms
+- **Latência:** 349.81ms
 - **Detalhes:** Status 200
 
 ### Failsafe - Pânico sem Autenticação (deve falhar)
 
 - **Status:** ✅ PASS
-- **Latência:** 236.38ms
+- **Latência:** 208.55ms
 - **Detalhes:** Status 401
 
 ### Failsafe - Pânico com Dados Parciais
 
 - **Status:** ✅ PASS
-- **Latência:** 468.56ms
+- **Latência:** 316.0ms
 - **Detalhes:** Status 200
 
 ### Security - SQL Injection (deve falhar)
 
 - **Status:** ❌ FAIL
-- **Latência:** 360.52ms
+- **Latência:** 500.99ms
 - **Detalhes:** Expected 401, got 400
 
 ### Security - XSS no Email (deve falhar)
 
 - **Status:** ✅ PASS
-- **Latência:** 166.17ms
+- **Latência:** 228.26ms
 - **Detalhes:** Status 400
 
 ### Security - Registro sem Senha (deve falhar)
 
 - **Status:** ✅ PASS
-- **Latência:** 198.46ms
+- **Latência:** 353.74ms
 - **Detalhes:** Status 400
 
 ### Security - Login sem Email (deve falhar)
 
 - **Status:** ✅ PASS
-- **Latência:** 183.59ms
+- **Latência:** 180.16ms
 - **Detalhes:** Status 400
 
 ### Frontend - Página Inicial
 
 - **Status:** ✅ PASS
-- **Latência:** 171.72ms
+- **Latência:** 198.58ms
 - **Detalhes:** HTML carregado
 
 ### Frontend - Asset /assets/index.css
 
 - **Status:** ⚠️ WARN
-- **Latência:** 190.56ms
+- **Latência:** 186.45ms
 - **Detalhes:** Status 404
 
 ### Frontend - Asset /assets/index.js
 
 - **Status:** ⚠️ WARN
-- **Latência:** 173.64ms
+- **Latência:** 243.01ms
 - **Detalhes:** Status 404
 
 ### Frontend - Logo
 
 - **Status:** ⚠️ WARN
-- **Latência:** 180.39ms
+- **Latência:** 214.56ms
 - **Detalhes:** Status 404
 
