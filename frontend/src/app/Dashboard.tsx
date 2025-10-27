@@ -4,16 +4,20 @@ import Layout from '../components/Layout'
 import Card from '../components/Card'
 import StatusBadge from '../components/StatusBadge'
 import api from '../lib/api'
-import { FileText, CheckCircle, AlertTriangle, User } from 'lucide-react'
+import { FileText, CheckCircle, AlertTriangle, User, Shield } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import Button from '../components/Button'
 
 export default function Dashboard() {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const [stats, setStats] = useState({
     identities: 0,
     signatures: 0,
     alerts: 0,
   })
   const [recentSignatures, setRecentSignatures] = useState<any[]>([])
+  const [kycStatus, setKycStatus] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -22,6 +26,15 @@ export default function Dashboard() {
 
   const loadDashboardData = async () => {
     try {
+      // Buscar status do KYC
+      try {
+        const kycResponse = await api.get('/kyc/status')
+        setKycStatus(kycResponse.data.status)
+      } catch (err) {
+        console.log('KYC não iniciado ainda')
+        setKycStatus('not_started')
+      }
+
       // Aqui você faria as chamadas reais para a API
       // Por enquanto, dados mockados
       setStats({
@@ -61,6 +74,44 @@ export default function Dashboard() {
           <h1 className="font-display text-3xl font-bold mb-2">Painel de Controle</h1>
           <p className="text-gray-600">Bem-vindo, {user?.email}</p>
         </div>
+
+        {/* Card de KYC */}
+        {kycStatus !== 'approved' && (
+          <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200">
+            <div className="flex items-start justify-between">
+              <div className="flex items-start space-x-4">
+                <div className="bg-blue-100 p-3 rounded-lg">
+                  <Shield className="w-8 h-8 text-brand-blue" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                    Verificação de Identidade (KYC)
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-4">
+                    {kycStatus === 'not_started' && 'Complete sua verificação de identidade para acessar todas as funcionalidades.'}
+                    {kycStatus === 'pending' && 'Sua verificação está em análise. Aguarde a aprovação.'}
+                    {kycStatus === 'rejected' && 'Sua verificação foi rejeitada. Tente novamente.'}
+                  </p>
+                  {kycStatus === 'not_started' && (
+                    <Button onClick={() => navigate('/kyc')} size="sm">
+                      Iniciar Verificação
+                    </Button>
+                  )}
+                  {kycStatus === 'pending' && (
+                    <Button onClick={() => navigate('/kyc')} variant="outline" size="sm">
+                      Ver Status
+                    </Button>
+                  )}
+                  {kycStatus === 'rejected' && (
+                    <Button onClick={() => navigate('/kyc')} size="sm">
+                      Tentar Novamente
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
 
         <div className="grid md:grid-cols-3 gap-6">
           <Card className="flex items-center space-x-4">
