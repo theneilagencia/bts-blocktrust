@@ -45,7 +45,7 @@ export default function Register() {
     <div className="min-h-screen bg-gradient-to-br from-brand-navy to-brand-neutral flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <div className="text-center mb-8">
-          <img src="/logo.png" alt="BTS Blocktrust" className="h-16 mx-auto mb-4" />
+          <img src="/logo-black.png" alt="BTS Blocktrust" className="h-16 mx-auto mb-4" />
           <p className="text-gray-600">Crie sua conta</p>
         </div>
 
