@@ -92,6 +92,8 @@ SENDGRID_API_KEY=<sua-sendgrid-key>
 TOOLBLOX_MINT_IDENTITY_URL=<toolblox-url-identity>
 TOOLBLOX_REGISTER_SIGNATURE_URL=<toolblox-url-signature>
 TOOLBLOX_VERIFY_URL=<toolblox-url-verify>
+TOOLBLOX_NETWORK=amoy
+ALERT_WEBHOOK_URL=<discord-ou-slack-webhook-url>
 SUMSUB_APP_TOKEN=<sumsub-token>
 SUMSUB_SECRET_KEY=<sumsub-secret>
 ```
