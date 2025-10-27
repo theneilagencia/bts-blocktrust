@@ -369,11 +369,12 @@ def kyc_webhook():
             # Se as credenciais do Sumsub são inválidas (modo mock), aceitar o webhook
             from api.utils.sumsub import validate_credentials
             is_valid, _ = validate_credentials()
-            if not is_valid:
-                logger.info("⚠️  Modo mock ativo, aceitando webhook sem validação de assinatura")
-            else:
+            if is_valid:
                 # Credenciais válidas mas assinatura inválida = rejeitar
                 return jsonify({'error': 'Assinatura inválida'}), 401
+            else:
+                # Modo mock: aceitar webhook sem validação
+                logger.info("⚠️  Modo mock ativo, aceitando webhook sem validação de assinatura")
         
         # Processa evento
         data = request.get_json()
