@@ -32,7 +32,8 @@ def register():
         'INSERT INTO users (email, password_hash, role) VALUES (%s, %s, %s) RETURNING id',
         (email, password_hash, 'user')
     )
-    user_id = cur.fetchone()[0]
+    result = cur.fetchone()
+    user_id = result['id']
     conn.commit()
     cur.close()
     conn.close()
@@ -66,7 +67,9 @@ def login():
     if not user:
         return jsonify({'error': 'Credenciais inválidas'}), 401
     
-    user_id, password_hash, role = user
+    user_id = user['id']
+    password_hash = user['password_hash']
+    role = user['role']
     
     if not bcrypt.checkpw(password.encode('utf-8'), password_hash.encode('utf-8')):
         return jsonify({'error': 'Credenciais inválidas'}), 401
