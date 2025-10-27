@@ -6,7 +6,10 @@ services:
     region: oregon
     buildCommand: |
       cd frontend && pnpm install && pnpm build
-      cd ../backend && pip install -r requirements.txt
+      cd ..
+      rm -rf backend/static
+      cp -r frontend/dist backend/static
+      cd backend && pip install -r requirements.txt
     startCommand: cd backend && python app.py
     envVars:
       - key: DATABASE_URL
