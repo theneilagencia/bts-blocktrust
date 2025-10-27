@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from auth import token_required
+from api.auth import token_required
 from utils.mail import send_panic_email
 from utils.db import get_db_connection
 
