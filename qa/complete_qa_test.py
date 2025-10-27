@@ -281,11 +281,58 @@ if auth_token:
     )
 
 # ============================================================================
-# 4. TESTES DE SEGURANÇA
+# 4. TESTES DE FAILSAFE (BOTÃO DE PÂNICO)
 # ============================================================================
 
 print("\n" + "="*80)
-print("4. TESTANDO SEGURANÇA")
+print("4. TESTANDO FAILSAFE (BOTÃO DE PÂNICO)")
+print("="*80 + "\n")
+
+if auth_token:
+    # 4.1 Ativar Botão de Pânico
+    response = test_endpoint(
+        "POST", "/panic/panic", 200,
+        headers=headers_auth,
+        data={
+            "wallet": "0x" + "1" * 40,
+            "hash": "0x" + "a" * 64,
+            "note": "Teste de alerta de pânico - QA Automatizado"
+        },
+        test_name="Ativar Botão de Pânico", module="Failsafe"
+    )
+    
+    if response:
+        try:
+            response_data = response.json()
+            print(f"   Mensagem: {response_data.get('message')}")
+        except:
+            pass
+    
+    # 4.2 Botão de Pânico sem Autenticação (deve falhar)
+    test_endpoint(
+        "POST", "/panic/panic", 401,
+        data={
+            "wallet": "0x" + "1" * 40,
+            "hash": "0x" + "a" * 64,
+            "note": "Teste sem autenticação"
+        },
+        test_name="Pânico sem Autenticação (deve falhar)", module="Failsafe"
+    )
+    
+    # 4.3 Botão de Pânico com Dados Incompletos
+    test_endpoint(
+        "POST", "/panic/panic", 200,
+        headers=headers_auth,
+        data={"note": "Apenas nota"},
+        test_name="Pânico com Dados Parciais", module="Failsafe"
+    )
+
+# ============================================================================
+# 5. TESTES DE SEGURANÇA
+# ============================================================================
+
+print("\n" + "="*80)
+print("5. TESTANDO SEGURANÇA")
 print("="*80 + "\n")
 
 # 4.1 SQL Injection
@@ -320,7 +367,7 @@ test_endpoint(
 # ============================================================================
 
 print("\n" + "="*80)
-print("5. TESTANDO FRONTEND")
+print("6. TESTANDO FRONTEND")
 print("="*80 + "\n")
 
 # 5.1 Página Inicial

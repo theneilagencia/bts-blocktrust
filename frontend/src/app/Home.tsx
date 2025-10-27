@@ -30,6 +30,22 @@ export default function Home() {
             Sistema descentralizado para registro, assinatura e verificação de documentos 
             com segurança blockchain e conformidade LGPD
           </p>
+
+          {/* Vídeo institucional */}
+          <div className="w-full flex flex-col items-center justify-center mt-10 mb-16">
+            <div className="w-full max-w-4xl aspect-video rounded-2xl overflow-hidden shadow-lg">
+              <iframe
+                className="w-full h-full"
+                src="https://www.youtube.com/embed/HAz8u9dWt28"
+                title="Conheça o BTS Blocktrust"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                loading="lazy"
+              ></iframe>
+            </div>
+          </div>
+
           <Link to="/register">
             <Button size="lg" className="text-lg px-8 py-4">
               Começar Agora
