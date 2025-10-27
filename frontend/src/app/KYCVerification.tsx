@@ -15,6 +15,7 @@ interface KYCStatus {
   reviewAnswer?: string;
   rejectLabels?: string[];
   moderationComment?: string;
+  mock_mode?: boolean;
 }
 
 export function KYCVerification() {
@@ -23,6 +24,7 @@ export function KYCVerification() {
   const [kycStatus, setKycStatus] = useState<KYCStatus | null>(null);
   const [error, setError] = useState('');
   const [sdkLoaded, setSdkLoaded] = useState(false);
+  const [mockMode, setMockMode] = useState(false);
 
   useEffect(() => {
     // Carrega SDK do Sumsub
@@ -71,7 +73,21 @@ export function KYCVerification() {
       // Inicializa KYC e obtém access token
       const response = await api.post('/kyc/init', {});
 
-      const { accessToken, applicantId } = response.data;
+      const { accessToken, applicantId, mock_mode } = response.data;
+
+      // Se estiver em modo mock, simula aprovação
+      if (mock_mode) {
+        setMockMode(true);
+        setError('');
+        alert('🎭 Modo Mock Ativado\n\nO sistema está em modo de demonstração.\nSeu KYC será aprovado automaticamente em alguns segundos.');
+        
+        // Simula processo de verificação
+        setTimeout(() => {
+          fetchKYCStatus();
+          setLoading(false);
+        }, 3000);
+        return;
+      }
 
       // Inicializa SDK do Sumsub
       if (window.snsWebSdk && sdkLoaded) {
@@ -298,13 +314,21 @@ export function KYCVerification() {
               {/* Container para o SDK do Sumsub */}
               <div id="sumsub-websdk-container" className="mb-6"></div>
 
+              {mockMode && (
+                <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <p className="text-yellow-800 text-sm">
+                    🎭 <strong>Modo Mock:</strong> Sistema em demonstração. O KYC será aprovado automaticamente.
+                  </p>
+                </div>
+              )}
+
               <div className="flex gap-4">
                 <Button
                   onClick={startKYC}
-                  disabled={loading || !sdkLoaded}
+                  disabled={loading}
                   className="flex-1"
                 >
-                  {loading ? 'Iniciando...' : 'Iniciar Verificação'}
+                  {loading ? 'Iniciando...' : mockMode ? 'Simular Verificação' : 'Iniciar Verificação'}
                 </Button>
                 <Button
                   onClick={() => navigate('/dashboard')}
