@@ -22,9 +22,20 @@ def init_db():
             kyc_status VARCHAR(50) DEFAULT 'not_started',
             kyc_updated_at TIMESTAMP,
             sumsub_data TEXT,
+            liveness_status VARCHAR(50),
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
+    
+    # Migration: Adicionar colunas de KYC se não existirem
+    try:
+        cur.execute('''
+            ALTER TABLE users 
+            ADD COLUMN IF NOT EXISTS liveness_status VARCHAR(50)
+        ''')
+    except Exception as e:
+        # Ignorar se a coluna já existir
+        pass
     
     cur.execute('''
         CREATE TABLE IF NOT EXISTS identities (
