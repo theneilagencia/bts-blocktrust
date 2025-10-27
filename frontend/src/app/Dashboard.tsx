@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import { useAuth } from '@/lib/auth'
-import Layout from '@/components/Layout'
-import Card from '@/components/Card'
-import StatusBadge from '@/components/StatusBadge'
-import api from '@/lib/api'
+import { useAuth } from '../lib/auth'
+import Layout from '../components/Layout'
+import Card from '../components/Card'
+import StatusBadge from '../components/StatusBadge'
+import api from '../lib/api'
 import { FileText, CheckCircle, AlertTriangle, User } from 'lucide-react'
 
 export default function Dashboard() {

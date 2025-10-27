@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Shield, FileCheck, Lock, Globe } from 'lucide-react'
-import Button from '@/components/Button'
+import Button from '../components/Button'
 
 export default function Home() {
   return (

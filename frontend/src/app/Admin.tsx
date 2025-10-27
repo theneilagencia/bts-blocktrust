@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import Layout from '@/components/Layout'
-import Card from '@/components/Card'
-import Button from '@/components/Button'
-import { showToast } from '@/components/Toaster'
-import api from '@/lib/api'
+import Layout from '../components/Layout'
+import Card from '../components/Card'
+import Button from '../components/Button'
+import { showToast } from '../components/Toaster'
+import api from '../lib/api'
 
 export default function Admin() {
   const [users, setUsers] = useState<any[]>([])

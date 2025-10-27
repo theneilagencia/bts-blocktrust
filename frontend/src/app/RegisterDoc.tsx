@@ -1,13 +1,13 @@
 import { useState } from 'react'
-import Layout from '@/components/Layout'
-import Card from '@/components/Card'
-import Button from '@/components/Button'
-import Input from '@/components/Input'
-import FileDrop from '@/components/FileDrop'
-import HashField from '@/components/HashField'
-import { showToast } from '@/components/Toaster'
-import { calculateSHA256 } from '@/lib/hash'
-import api from '@/lib/api'
+import Layout from '../components/Layout'
+import Card from '../components/Card'
+import Button from '../components/Button'
+import Input from '../components/Input'
+import FileDrop from '../components/FileDrop'
+import HashField from '../components/HashField'
+import { showToast } from '../components/Toaster'
+import { calculateSHA256 } from '../lib/hash'
+import api from '../lib/api'
 
 export default function RegisterDoc() {
   const [file, setFile] = useState<File | null>(null)
