@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify
 from api.utils.db import get_db_connection
+import os
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -68,4 +69,28 @@ def migrate_kyc_columns():
             'status': 'error',
             'error': str(e)
         }), 500
+
+@admin_bp.route('/debug-env', methods=['GET'])
+def debug_env():
+    """Retorna variáveis de ambiente para debug"""
+    return jsonify({
+        'toolblox': {
+            'mint_url': os.getenv('TOOLBLOX_MINT_IDENTITY_URL'),
+            'signature_url': os.getenv('TOOLBLOX_REGISTER_SIGNATURE_URL'),
+            'verify_url': os.getenv('TOOLBLOX_VERIFY_URL'),
+            'network': os.getenv('TOOLBLOX_NETWORK')
+        },
+        'sumsub': {
+            'app_token_set': bool(os.getenv('SUMSUB_APP_TOKEN')),
+            'secret_key_set': bool(os.getenv('SUMSUB_SECRET_KEY')),
+            'level_name': os.getenv('SUMSUB_LEVEL_NAME')
+        },
+        'smtp': {
+            'host': os.getenv('SMTP_HOST'),
+            'port': os.getenv('SMTP_PORT'),
+            'user': os.getenv('SMTP_USER'),
+            'from': os.getenv('SMTP_FROM'),
+            'pass_set': bool(os.getenv('SMTP_PASS'))
+        }
+    }), 200
 
