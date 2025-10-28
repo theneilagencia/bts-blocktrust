@@ -1,0 +1,30 @@
+ANÁLISE DOS LOGS DO RENDER - INTEGRAÇÃO SUMSUB
+================================================
+
+LOG RELEVANTE ENCONTRADO:
+Oct 28 09:47:14 PM - 2025-10-28 21:47:14,137 - api.routes.kyc_routes - INFO - ⚠️ Applicant mock detectado
+
+ANÁLISE:
+--------
+O log mostra que o sistema detectou um "applicant mock", o que significa que:
+
+1. A função create_applicant() foi chamada
+2. Ela retornou um resultado com status='mock' ou status='error'
+3. O sistema ativou o modo mock como fallback
+
+PROBLEMA IDENTIFICADO:
+----------------------
+Não há logs detalhados do erro 400 Bad Request do Sumsub nos logs mais recentes.
+Isso pode significar que:
+
+1. O deploy mais recente (ae30d50) ainda não processou uma requisição de criação de applicant
+2. OU o código novo ainda não está sendo executado (cache do Render?)
+3. OU há um problema com a lógica de logging
+
+PRÓXIMOS PASSOS:
+----------------
+1. Verificar se o código foi realmente deployado
+2. Analisar o erro 400 Bad Request do Sumsub (logs antigos mostram isso)
+3. Investigar o payload enviado para a API do Sumsub
+4. Verificar se os headers estão corretos (especialmente a assinatura HMAC)
+

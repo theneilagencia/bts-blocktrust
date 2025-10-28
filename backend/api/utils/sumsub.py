@@ -134,7 +134,9 @@ def create_applicant(external_user_id, email, level_name=None):
     }
     
     try:
-        headers = get_headers(method, url, body)
+        # Converter body para JSON string para assinatura HMAC
+        body_json = json.dumps(body)
+        headers = get_headers(method, url, body_json)
         response = requests.post(
             f'{SUMSUB_BASE_URL}{url}',
             json=body,
