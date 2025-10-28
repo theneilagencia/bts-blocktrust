@@ -392,27 +392,22 @@ def kyc_webhook():
         signature_valid = verify_webhook_signature(request_body, signature)
         
         if not signature_valid:
-            # Em ambiente de desenvolvimento/teste, aceitar webhook mas logar aviso
-            # Em produção com credenciais válidas, rejeitar
-            logger.warning(f"Assinatura inválida no webhook: {signature}")
-            logger.warning(f"Body recebido (primeiros 200 chars): {request_body[:200]}")
+            logger.error(f"❌ Assinatura HMAC inválida no webhook: {signature[:20]}...")
+            logger.debug(f"Body recebido (primeiros 200 chars): {request_body[:200]}")
             
-            # Verificar se estamos em modo mock (credenciais inválidas)
+            # Verificar se estamos em modo de desenvolvimento local (BYPASS_WEBHOOK_VALIDATION)
             import os
-            sumsub_token = os.getenv('SUMSUB_APP_TOKEN')
-            sumsub_secret = os.getenv('SUMSUB_SECRET_KEY')
+            bypass_validation = os.getenv('BYPASS_WEBHOOK_VALIDATION', 'false').lower() == 'true'
             
-            # Se as credenciais existem, tentar validar
-            if sumsub_token and sumsub_secret:
-                # Fazer um teste rápido para ver se as credenciais funcionam
-                # Se o KYC init retorna mock, então as credenciais são inválidas
-                # Por simplicidade, aceitar webhook em modo de desenvolvimento
-                logger.info("⚠️  Modo de desenvolvimento: aceitando webhook com assinatura inválida")
-                # Não retornar erro, continuar processamento
+            if bypass_validation:
+                logger.warning("⚠️  BYPASS_WEBHOOK_VALIDATION ativado: aceitando webhook com assinatura inválida")
+                logger.warning("🚨 ATENÇÃO: Isso não deve estar ativado em produção!")
             else:
-                # Sem credenciais configuradas
-                logger.info("⚠️  Credenciais não configuradas, aceitando webhook")
-                # Não retornar erro, continuar processamento
+                # PRODUÇÃO: Rejeitar webhook com assinatura inválida
+                return jsonify({
+                    'error': 'Assinatura HMAC inválida',
+                    'message': 'Webhook rejeitado por falha na validação de segurança'
+                }), 403
         
         # Processa evento
         data = request.get_json()
