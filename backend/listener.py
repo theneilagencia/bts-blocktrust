@@ -222,6 +222,16 @@ def listen_events():
                 
                 current_block = latest_block + 1
                 logger.info(f"✅ Blocos processados. Próximo: {current_block}")
+                
+                # Heartbeat para monitoramento
+                try:
+                    from monitor.db import save_metric
+                    save_metric("listener.tick", True, 0, {
+                        "note": "heartbeat",
+                        "block_number": str(current_block)
+                    })
+                except Exception as e:
+                    logger.debug(f"Erro ao salvar heartbeat: {str(e)}")
             
             else:
                 logger.debug(f"⏳ Aguardando novos blocos... (atual: {current_block})")
