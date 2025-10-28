@@ -24,11 +24,11 @@ services:
       - key: ALERT_WEBHOOK_URL
         sync: false
       - key: SUMSUB_APP_TOKEN
-        value: "uKBKq1VVgbptORChz3E1RtDB.FuhXzSuDD7eTyQe7WuekjAkDbuyl9Fw"
+        value: "prd:eyW5pvkuQMGBUHYGk3XA54ca.p1JjuODOKigFd8D2NiiiUZMLTwrEVQtl"
       - key: SUMSUB_SECRET_KEY
-        value: "HPuMPbrCSs1dgobgDRIVJu5JP82eLgFc"
+        value: "FznTfaCUFCu2htSaGfqWNJfRV19YjnWv"
       - key: SUMSUB_LEVEL_NAME
-        value: "basic-kyc-level"
+        value: "Basic"
       - key: SMTP_HOST
         value: "smtp.gmail.com"
       - key: SMTP_PORT
