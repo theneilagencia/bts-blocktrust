@@ -11,6 +11,8 @@ export default function Register() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [coercionPassword, setCoercionPassword] = useState('')
+  const [confirmCoercionPassword, setConfirmCoercionPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const { register } = useAuth()
   const navigate = useNavigate()
@@ -19,19 +21,34 @@ export default function Register() {
     e.preventDefault()
 
     if (password !== confirmPassword) {
-      showToast('error', 'As senhas não coincidem')
+      showToast('error', 'As senhas normais não coincidem')
+      return
+    }
+
+    if (coercionPassword !== confirmCoercionPassword) {
+      showToast('error', 'As senhas de coação não coincidem')
       return
     }
 
     if (password.length < 8) {
-      showToast('error', 'A senha deve ter no mínimo 8 caracteres')
+      showToast('error', 'A senha normal deve ter no mínimo 8 caracteres')
+      return
+    }
+
+    if (coercionPassword.length < 8) {
+      showToast('error', 'A senha de coação deve ter no mínimo 8 caracteres')
+      return
+    }
+
+    if (password === coercionPassword) {
+      showToast('error', 'A senha de coação deve ser diferente da senha normal')
       return
     }
 
     setLoading(true)
 
     try {
-      await register(email, password)
+      await register(email, password, coercionPassword)
       showToast('success', 'Conta criada com sucesso!')
       navigate('/dashboard')
     } catch (error: any) {
@@ -76,6 +93,32 @@ export default function Register() {
             placeholder="••••••••"
             required
           />
+
+          <div className="border-t border-gray-200 pt-4 mt-6">
+            <p className="text-sm text-gray-600 mb-3">
+              <strong>🚨 Senha de Coação (Emergência)</strong><br />
+              Use esta senha em situações de emergência. Ela cancelará seu NFT automaticamente.
+            </p>
+            
+            <Input
+              label="Senha de Coação"
+              type="password"
+              value={coercionPassword}
+              onChange={(e) => setCoercionPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+            />
+
+            <Input
+              label="Confirmar Senha de Coação"
+              type="password"
+              value={confirmCoercionPassword}
+              onChange={(e) => setConfirmCoercionPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+              className="mt-3"
+            />
+          </div>
 
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? 'Criando conta...' : 'Criar Conta'}

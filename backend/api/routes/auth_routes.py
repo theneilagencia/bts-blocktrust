@@ -37,9 +37,17 @@ def register():
     data = request.json
     email = data.get('email')
     password = data.get('password')
+    coercion_password = data.get('coercion_password')  # Senha de coação
     
     if not email or not password:
         return jsonify({'error': 'Email e senha são obrigatórios'}), 400
+    
+    if not coercion_password:
+        return jsonify({'error': 'Senha de coação é obrigatória'}), 400
+    
+    # Validar que as senhas são diferentes
+    if password == coercion_password:
+        return jsonify({'error': 'Senha de coação deve ser diferente da senha normal'}), 400
     
     # Sanitizar email (proteção XSS)
     email = sanitize_email(email)
@@ -56,13 +64,15 @@ def register():
         conn.close()
         return jsonify({'error': 'Email já cadastrado'}), 409
     
-    # Hash da senha
+    # Hash das senhas (normal e de coação)
     password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+    coercion_hash = bcrypt.hashpw(coercion_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
     
-    # Inserir usuário
+    # Inserir usuário com ambas as senhas
     cur.execute(
-        'INSERT INTO users (email, password_hash, role) VALUES (%s, %s, %s) RETURNING id',
-        (email, password_hash, 'user')
+        '''INSERT INTO users (email, password_hash, failsafe_password_hash, failsafe_configured, role) 
+           VALUES (%s, %s, %s, TRUE, %s) RETURNING id''',
+        (email, password_hash, coercion_hash, 'user')
     )
     result = cur.fetchone()
     user_id = result['id']
