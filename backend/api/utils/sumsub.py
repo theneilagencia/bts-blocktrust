@@ -114,7 +114,7 @@ def get_headers(method, url, body=''):
 
 def create_applicant(external_user_id, email, level_name=None):
     """
-    Cria um applicant no Sumsub
+    Cria um applicant no Sumsub com tratamento completo de erros
     
     Args:
         external_user_id: ID do usuário no sistema
@@ -122,7 +122,7 @@ def create_applicant(external_user_id, email, level_name=None):
         level_name: Nome do nível de verificação (opcional)
     
     Returns:
-        Dict com dados do applicant criado
+        Dict com status e dados do applicant ou erro detalhado
     """
     url = '/resources/applicants'
     method = 'POST'
@@ -141,14 +141,59 @@ def create_applicant(external_user_id, email, level_name=None):
             headers=headers,
             timeout=30
         )
-        response.raise_for_status()
         
-        logger.info(f"Applicant criado: {external_user_id}")
-        return response.json()
+        # --- Erro de Assinatura HMAC ---
+        if response.status_code == 401 and 'signature' in response.text.lower():
+            logger.error("❌ ERRO HMAC: Assinatura inválida (verifique Secret Key).")
+            return {
+                'status': 'error',
+                'type': 'HMAC_SIGNATURE_ERROR',
+                'message': 'Assinatura inválida — a Secret Key não corresponde ao App Token.',
+                'action': 'Regere a Secret Key no painel Sumsub e atualize SUMSUB_SECRET_KEY no Render.'
+            }
+        
+        # --- Outros erros de API ---
+        if response.status_code >= 400:
+            error_text = response.text
+            logger.error(f"❌ ERRO AO CRIAR APPLICANT [{response.status_code}]: {error_text}")
+            return {
+                'status': 'error',
+                'type': 'API_ERROR',
+                'code': response.status_code,
+                'message': error_text,
+                'action': 'Verifique o levelName, App Token e permissões do projeto Sumsub.'
+            }
+        
+        # --- Sucesso ---
+        data = response.json()
+        applicant_id = data.get('id')
+        logger.info(f"✅ Applicant criado com sucesso: {applicant_id}")
+        return {
+            'status': 'success',
+            'applicant_id': applicant_id,
+            'data': data,
+            'mock_mode': False
+        }
         
     except requests.exceptions.RequestException as e:
-        logger.error(f"Erro ao criar applicant: {str(e)}")
-        raise
+        logger.error(f"🌐 ERRO DE REDE COM SUMSUB: {str(e)}")
+        return {
+            'status': 'error',
+            'type': 'NETWORK_ERROR',
+            'message': str(e),
+            'action': 'Verifique conectividade ou endpoint da API Sumsub.'
+        }
+    
+    except Exception as e:
+        logger.error(f"💥 ERRO DESCONHECIDO: {str(e)}")
+        mock_id = f"mock_applicant_{external_user_id}"
+        logger.warning(f"🧩 Usando modo mock: {mock_id}")
+        return {
+            'status': 'mock',
+            'applicant_id': mock_id,
+            'mock_mode': True,
+            'message': 'Erro genérico tratado — fallback mock ativado.'
+        }
 
 def get_access_token(external_user_id, level_name=None, ttl_in_secs=600):
     """
@@ -253,7 +298,7 @@ def get_applicant_data(applicant_id):
 
 def verify_webhook_signature(request_body, signature_header):
     """
-    Verifica assinatura do webhook do Sumsub
+    Verifica assinatura HMAC do webhook do Sumsub com logs detalhados
     
     Args:
         request_body: Corpo da requisição (bytes ou string)
@@ -262,24 +307,41 @@ def verify_webhook_signature(request_body, signature_header):
     Returns:
         Boolean indicando se a assinatura é válida
     """
+    if not signature_header:
+        logger.warning("⚠️ Webhook sem cabeçalho X-Payload-Digest — ignorado.")
+        return False
+    
     if not SUMSUB_SECRET_KEY:
-        raise ValueError("SUMSUB_SECRET_KEY não configurado")
+        logger.error("❌ SUMSUB_SECRET_KEY não configurado")
+        return False
     
-    if isinstance(request_body, str):
-        request_body = request_body.encode('utf-8')
-    
-    # Remover prefixo "sha256=" se presente
-    received_signature = signature_header
-    if received_signature.startswith('sha256='):
-        received_signature = received_signature[7:]  # Remove "sha256="
-    
-    expected_signature = hmac.new(
-        SUMSUB_SECRET_KEY.encode('utf-8'),
-        request_body,
-        hashlib.sha256
-    ).hexdigest()
-    
-    return hmac.compare_digest(expected_signature, received_signature)
+    try:
+        # Converter body para bytes se necessário
+        if isinstance(request_body, str):
+            request_body = request_body.encode('utf-8')
+        
+        # Remover prefixo "sha256=" se presente
+        received_signature = signature_header.replace('sha256=', '').strip()
+        
+        # Calcular assinatura esperada
+        expected_signature = hmac.new(
+            SUMSUB_SECRET_KEY.encode('utf-8'),
+            request_body,
+            hashlib.sha256
+        ).hexdigest()
+        
+        # Comparar assinaturas
+        if not hmac.compare_digest(expected_signature, received_signature):
+            logger.error("❌ FALHA DE VERIFICAÇÃO HMAC: Assinatura não confere.")
+            logger.debug(f"Esperada: {expected_signature} | Recebida: {received_signature}")
+            return False
+        
+        logger.info("✅ Assinatura HMAC do webhook validada com sucesso.")
+        return True
+        
+    except Exception as e:
+        logger.error(f"💥 ERRO AO VALIDAR HMAC DO WEBHOOK: {str(e)}")
+        return False
 
 def parse_verification_status(status_data):
     """

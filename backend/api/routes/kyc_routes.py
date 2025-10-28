@@ -98,9 +98,65 @@ def init_kyc(current_user):
         # Se não tem applicant_id, cria um novo
         if not applicant_id:
             logger.info(f"Criando applicant para usuário {user_id}")
-            try:
-                applicant_data = create_applicant(user_id, user_email)
-                applicant_id = applicant_data.get('id')
+            
+            # Criar applicant com tratamento de erro integrado
+            result = create_applicant(user_id, user_email)
+            
+            # Verificar se houve erro
+            if result.get('status') == 'error':
+                logger.error(f"❌ {result.get('type')}: {result.get('message')}")
+                logger.info(f"💡 Ação recomendada: {result.get('action')}")
+                
+                # Usar modo mock
+                mock_applicant_id = f"mock_applicant_{user_id}"
+                logger.warning(f"🧩 Ativando modo mock: {mock_applicant_id}")
+                
+                cur.execute("""
+                    UPDATE users
+                    SET applicant_id = %s, kyc_status = 'pending'
+                    WHERE id = %s
+                """, (mock_applicant_id, user_id))
+                conn.commit()
+                cur.close()
+                conn.close()
+                
+                return jsonify({
+                    'status': 'success',
+                    'accessToken': 'mock_access_token_for_testing',
+                    'applicantId': mock_applicant_id,
+                    'expiresAt': '2025-12-31T23:59:59Z',
+                    'mock_mode': True,
+                    'error_type': result.get('type'),
+                    'message': f"Mock: {result.get('message')}"
+                }), 200
+            
+            # Verificar se é modo mock
+            elif result.get('status') == 'mock':
+                mock_applicant_id = result.get('applicant_id')
+                logger.warning(f"🧩 Modo mock ativado: {mock_applicant_id}")
+                
+                cur.execute("""
+                    UPDATE users
+                    SET applicant_id = %s, kyc_status = 'pending'
+                    WHERE id = %s
+                """, (mock_applicant_id, user_id))
+                conn.commit()
+                cur.close()
+                conn.close()
+                
+                return jsonify({
+                    'status': 'success',
+                    'accessToken': 'mock_access_token_for_testing',
+                    'applicantId': mock_applicant_id,
+                    'expiresAt': '2025-12-31T23:59:59Z',
+                    'mock_mode': True,
+                    'message': result.get('message')
+                }), 200
+            
+            # Sucesso
+            elif result.get('status') == 'success':
+                applicant_id = result.get('applicant_id')
+                applicant_data = result.get('data')
                 
                 # Atualiza banco de dados
                 cur.execute("""
@@ -109,35 +165,6 @@ def init_kyc(current_user):
                     WHERE id = %s
                 """, (applicant_id, str(applicant_data), user_id))
                 conn.commit()
-            except Exception as create_error:
-                # Se falhar ao criar applicant, usar modo mock
-                logger.error(f"❌ ERRO AO CRIAR APPLICANT: {str(create_error)}")
-                logger.error(f"❌ TIPO DE ERRO: {type(create_error).__name__}")
-                
-                # Sempre usar modo mock em caso de erro
-                if True:  # Captura qualquer erro
-                    logger.warning("⚠️  Falha ao criar applicant no Sumsub (401), usando modo mock")
-                    mock_applicant_id = f"mock_applicant_{user_id}"
-                    
-                    cur.execute("""
-                        UPDATE users
-                        SET applicant_id = %s, kyc_status = 'pending'
-                        WHERE id = %s
-                    """, (mock_applicant_id, user_id))
-                    conn.commit()
-                    cur.close()
-                    conn.close()
-                    
-                    return jsonify({
-                        'status': 'success',
-                        'accessToken': 'mock_access_token_for_testing',
-                        'applicantId': mock_applicant_id,
-                        'expiresAt': '2025-12-31T23:59:59Z',
-                        'mock_mode': True,
-                        'message': 'Mock: KYC inicializado (API indisponível)'
-                    }), 200
-                else:
-                    raise
         
         # Gera access token para o SDK
         try:
