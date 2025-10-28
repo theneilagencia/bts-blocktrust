@@ -8,6 +8,9 @@ from api.routes.proxy_routes import proxy_bp
 from api.routes.panic_routes import panic_bp
 from api.routes.kyc_routes import kyc_bp
 from api.routes.admin_routes import admin_bp
+from api.routes.wallet_routes import wallet_bp
+from api.routes.nft_routes import nft_bp
+from api.routes.signature_routes import signature_bp
 
 app = Flask(__name__, static_folder="static", static_url_path="/")
 CORS(app)
@@ -18,6 +21,9 @@ app.register_blueprint(proxy_bp, url_prefix='/api/proxy')
 app.register_blueprint(panic_bp, url_prefix='/api/panic')
 app.register_blueprint(kyc_bp, url_prefix='/api/kyc')
 app.register_blueprint(admin_bp, url_prefix='/api/admin')
+app.register_blueprint(wallet_bp, url_prefix='/api/wallet')
+app.register_blueprint(nft_bp, url_prefix='/api/nft')
+app.register_blueprint(signature_bp, url_prefix='/api/signature')
 
 # Health check
 @app.route('/api/health')
