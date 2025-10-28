@@ -1,5 +1,5 @@
-const hre = require("hardhat");
-const fs = require("fs");
+import hre from "hardhat";
+import fs from "fs";
 
 async function main() {
   console.log("🚀 Iniciando deploy dos contratos Blocktrust v1.2...\n");

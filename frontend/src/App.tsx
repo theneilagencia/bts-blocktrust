@@ -10,6 +10,7 @@ import { KYCVerification } from './app/KYCVerification'
 import { AuthProvider, useAuth } from './lib/auth'
 import Toaster from './components/Toaster'
 import Explorer from './components/Explorer'
+import DualSignature from './components/DualSignature'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user } = useAuth()
@@ -36,6 +37,7 @@ function App() {
           <Route path="/kyc" element={<PrivateRoute><KYCVerification /></PrivateRoute>} />
           <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
           <Route path="/explorer" element={<Explorer />} />
+          <Route path="/dual-signature" element={<PrivateRoute><DualSignature /></PrivateRoute>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

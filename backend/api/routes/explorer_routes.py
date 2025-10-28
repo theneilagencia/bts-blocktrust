@@ -250,3 +250,86 @@ def get_stats():
         logger.error(f"❌ Erro ao obter estatísticas: {str(e)}")
         return jsonify({'error': 'Erro ao obter estatísticas', 'details': str(e)}), 500
 
+
+
+@explorer_bp.route('/dual-proofs', methods=['GET'])
+def get_dual_proofs():
+    """
+    Retorna lista de assinaturas duplas (Dual Proofs)
+    
+    Returns:
+        {
+            "proofs": [
+                {
+                    "id": 1,
+                    "doc_hash": "0x...",
+                    "pgp_fingerprint": "...",
+                    "pgp_sig_hash": "0x...",
+                    "nft_id": 123,
+                    "blockchain_tx": "0x...",
+                    "created_at": "2025-10-28T...",
+                    "user_email": "user@example.com"
+                }
+            ],
+            "total": 10
+        }
+    """
+    try:
+        from ..database import get_db_connection
+        
+        conn = get_db_connection()
+        cur = conn.cursor()
+        
+        # Obter parâmetros de paginação
+        page = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 50))
+        offset = (page - 1) * per_page
+        
+        # Contar total
+        cur.execute("SELECT COUNT(*) FROM dual_sign_logs")
+        total = cur.fetchone()[0]
+        
+        # Buscar proofs
+        cur.execute("""
+            SELECT 
+                dsl.id,
+                dsl.doc_hash,
+                dsl.pgp_fingerprint,
+                dsl.pgp_sig_hash,
+                dsl.nft_id,
+                dsl.blockchain_tx,
+                dsl.created_at,
+                u.email
+            FROM dual_sign_logs dsl
+            LEFT JOIN users u ON dsl.user_id = u.id
+            ORDER BY dsl.created_at DESC
+            LIMIT %s OFFSET %s
+        """, (per_page, offset))
+        
+        proofs = []
+        for row in cur.fetchall():
+            proofs.append({
+                'id': row[0],
+                'doc_hash': row[1],
+                'pgp_fingerprint': row[2],
+                'pgp_sig_hash': row[3],
+                'nft_id': row[4],
+                'blockchain_tx': row[5],
+                'created_at': row[6].isoformat() if row[6] else None,
+                'user_email': row[7]
+            })
+        
+        cur.close()
+        conn.close()
+        
+        return jsonify({
+            'proofs': proofs,
+            'total': total,
+            'page': page,
+            'per_page': per_page
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"❌ Erro ao obter dual proofs: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
