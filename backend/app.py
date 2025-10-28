@@ -11,6 +11,7 @@ from api.routes.admin_routes import admin_bp
 from api.routes.wallet_routes import wallet_bp
 from api.routes.nft_routes import nft_bp
 from api.routes.signature_routes import signature_bp
+from api.routes.explorer_routes import explorer_bp
 
 app = Flask(__name__, static_folder="static", static_url_path="/")
 CORS(app)
@@ -24,6 +25,7 @@ app.register_blueprint(admin_bp, url_prefix='/api/admin')
 app.register_blueprint(wallet_bp, url_prefix='/api/wallet')
 app.register_blueprint(nft_bp, url_prefix='/api/nft')
 app.register_blueprint(signature_bp, url_prefix='/api/signature')
+app.register_blueprint(explorer_bp, url_prefix='/api/explorer')
 
 # Health check
 @app.route('/api/health')

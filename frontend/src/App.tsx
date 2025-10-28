@@ -9,6 +9,7 @@ import Admin from './app/Admin'
 import { KYCVerification } from './app/KYCVerification'
 import { AuthProvider, useAuth } from './lib/auth'
 import Toaster from './components/Toaster'
+import Explorer from './components/Explorer'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user } = useAuth()
@@ -34,6 +35,7 @@ function App() {
           <Route path="/verificar" element={<PrivateRoute><VerifyDoc /></PrivateRoute>} />
           <Route path="/kyc" element={<PrivateRoute><KYCVerification /></PrivateRoute>} />
           <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
+          <Route path="/explorer" element={<Explorer />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
