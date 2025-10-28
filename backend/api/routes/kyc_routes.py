@@ -111,8 +111,10 @@ def init_kyc(current_user):
                 conn.commit()
             except Exception as create_error:
                 # Se falhar ao criar applicant (401 Unauthorized), usar modo mock
+                logger.error(f"❌ ERRO AO CRIAR APPLICANT: {str(create_error)}")
+                logger.error(f"❌ TIPO DE ERRO: {type(create_error).__name__}")
                 if '401' in str(create_error) or 'Unauthorized' in str(create_error):
-                    logger.warning("⚠️  Falha ao criar applicant no Sumsub, usando modo mock")
+                    logger.warning("⚠️  Falha ao criar applicant no Sumsub (401), usando modo mock")
                     mock_applicant_id = f"mock_applicant_{user_id}"
                     
                     cur.execute("""
