@@ -5,7 +5,7 @@ Rotas de API para configuração de senha de emergência (Failsafe)
 from flask import Blueprint, request, jsonify
 import logging
 import bcrypt
-from api.utils.auth import token_required
+from api.auth import token_required
 from api.utils.database import get_db_connection
 
 logger = logging.getLogger(__name__)
