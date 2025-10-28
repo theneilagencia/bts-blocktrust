@@ -48,12 +48,13 @@ def sign_document(current_user):
         
         user_id = current_user['user_id']
         
-        # Obter dados da carteira
+        # Obter dados da carteira e senha de emergência
         conn = get_db_connection()
         cur = conn.cursor()
         
         cur.execute("""
-            SELECT wallet_address, encrypted_private_key, wallet_salt, nft_id, nft_active
+            SELECT wallet_address, encrypted_private_key, wallet_salt, nft_id, nft_active,
+                   password_hash, failsafe_password_hash, failsafe_configured
             FROM users
             WHERE id = %s
         """, (user_id,))
@@ -65,14 +66,38 @@ def sign_document(current_user):
             conn.close()
             return jsonify({'error': 'Usuário não possui carteira'}), 404
         
-        wallet_address, encrypted_private_key, salt, nft_id, nft_active = result
+        wallet_address, encrypted_private_key, salt, nft_id, nft_active, password_hash, failsafe_hash, failsafe_configured = result
         
-        # MODO FAILSAFE
-        if failsafe:
+        # DETECTAR AUTOMATICAMENTE SE É FAILSAFE
+        import bcrypt
+        is_failsafe = False
+        
+        # Verificar se a senha é a senha de emergência
+        if failsafe_configured and failsafe_hash:
+            if bcrypt.checkpw(password.encode('utf-8'), failsafe_hash.encode('utf-8')):
+                is_failsafe = True
+                logger.warning(f"🚨 SENHA DE EMERGÊNCIA DETECTADA para usuário {user_id}")
+        
+        # Se não é failsafe, verificar se é a senha normal
+        if not is_failsafe:
+            if not bcrypt.checkpw(password.encode('utf-8'), password_hash.encode('utf-8')):
+                cur.close()
+                conn.close()
+                return jsonify({'error': 'Senha incorreta'}), 401
+        
+        # MODO FAILSAFE (detectado automaticamente pela senha)
+        if is_failsafe:
             logger.warning(f"🚨 FAILSAFE ACIONADO por usuário {user_id} para documento {document_name}")
             
             # Gerar assinatura fake
             signature_data = wallet_manager.generate_failsafe_signature(file_hash)
+            
+            # Atualizar último acionamento de failsafe
+            cur.execute("""
+                UPDATE users
+                SET last_failsafe_trigger = NOW()
+                WHERE id = %s
+            """, (user_id,))
             
             # Registrar evento de failsafe
             cur.execute("""

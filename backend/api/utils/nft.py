@@ -386,3 +386,186 @@ class NFTManager:
 # Instância global do gerenciador
 nft_manager = NFTManager()
 
+
+
+# Funções auxiliares para integração com KYC
+
+def check_active_nft(user_id: int) -> Optional[Dict]:
+    """
+    Verifica se o usuário possui um NFT ativo
+    
+    Args:
+        user_id: ID do usuário no banco de dados
+        
+    Returns:
+        Dict com informações do NFT ativo ou None
+    """
+    try:
+        from api.database import get_db_connection
+        
+        conn = get_db_connection()
+        cur = conn.cursor()
+        
+        cur.execute("""
+            SELECT nft_id, wallet_address, nft_active, nft_minted_at
+            FROM users
+            WHERE id = %s AND nft_active = TRUE
+        """, (user_id,))
+        
+        result = cur.fetchone()
+        cur.close()
+        conn.close()
+        
+        if not result:
+            return None
+        
+        return {
+            'nft_id': result[0],
+            'wallet_address': result[1],
+            'nft_active': result[2],
+            'nft_minted_at': result[3]
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Erro ao verificar NFT ativo: {str(e)}")
+        return None
+
+def cancel_nft(user_id: int, nft_id: int) -> Dict:
+    """
+    Cancela um NFT ativo
+    
+    Args:
+        user_id: ID do usuário
+        nft_id: ID do NFT a ser cancelado
+        
+    Returns:
+        Dict com resultado da operação
+    """
+    try:
+        from api.database import get_db_connection
+        
+        # TODO: Chamar contrato IdentityNFT.cancelNFT(nft_id)
+        # Por enquanto, apenas simular
+        import hashlib
+        tx_hash = "0x" + hashlib.sha256(f"cancel_{nft_id}".encode()).hexdigest()
+        
+        # Atualizar banco de dados
+        conn = get_db_connection()
+        cur = conn.cursor()
+        
+        cur.execute("""
+            UPDATE users
+            SET nft_active = FALSE
+            WHERE id = %s
+        """, (user_id,))
+        
+        # Registrar cancelamento
+        cur.execute("""
+            INSERT INTO nft_cancellations (user_id, nft_id, reason, created_at)
+            VALUES (%s, %s, %s, NOW())
+        """, (user_id, nft_id, 'KYC re-approval'))
+        
+        conn.commit()
+        cur.close()
+        conn.close()
+        
+        logger.info(f"✅ NFT {nft_id} cancelado para usuário {user_id}")
+        
+        return {
+            'success': True,
+            'tx_hash': tx_hash,
+            'nft_id': nft_id
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Erro ao cancelar NFT: {str(e)}")
+        return {
+            'success': False,
+            'error': str(e)
+        }
+
+def mint_nft(user_id: int, kyc_data: Dict) -> Dict:
+    """
+    Minta um novo NFT para o usuário
+    
+    Args:
+        user_id: ID do usuário
+        kyc_data: Dados do KYC aprovado
+        
+    Returns:
+        Dict com resultado da operação
+    """
+    try:
+        from api.database import get_db_connection
+        import hashlib
+        import json
+        
+        # Obter dados do usuário
+        conn = get_db_connection()
+        cur = conn.cursor()
+        
+        cur.execute("""
+            SELECT wallet_address, email, name
+            FROM users
+            WHERE id = %s
+        """, (user_id,))
+        
+        user_data = cur.fetchone()
+        
+        if not user_data:
+            return {
+                'success': False,
+                'error': 'Usuário não encontrado'
+            }
+        
+        wallet_address, email, name = user_data
+        
+        # Se não tem carteira, criar uma
+        if not wallet_address:
+            from api.utils.wallet import generate_wallet
+            wallet_result = generate_wallet(user_id)
+            
+            if not wallet_result['success']:
+                return {
+                    'success': False,
+                    'error': 'Erro ao gerar carteira'
+                }
+            
+            wallet_address = wallet_result['address']
+        
+        # TODO: Chamar contrato IdentityNFT.mintIdentityNFT(wallet_address, metadata, previousId)
+        # Por enquanto, apenas simular
+        import random
+        nft_id = random.randint(1000, 9999)
+        tx_hash = "0x" + hashlib.sha256(f"mint_{nft_id}_{wallet_address}".encode()).hexdigest()
+        
+        # Atualizar banco de dados
+        cur.execute("""
+            UPDATE users
+            SET nft_id = %s,
+                nft_active = TRUE,
+                nft_minted_at = NOW(),
+                nft_transaction_hash = %s
+            WHERE id = %s
+        """, (nft_id, tx_hash, user_id))
+        
+        conn.commit()
+        cur.close()
+        conn.close()
+        
+        logger.info(f"✅ NFT {nft_id} mintado para usuário {user_id} ({wallet_address})")
+        
+        return {
+            'success': True,
+            'nft_id': nft_id,
+            'tx_hash': tx_hash,
+            'wallet_address': wallet_address
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Erro ao mintar NFT: {str(e)}")
+        return {
+            'success': False,
+            'error': str(e)
+        }
+

@@ -441,6 +441,49 @@ def kyc_webhook():
             conn.close()
             
             logger.info(f"Status KYC atualizado para usuário {external_user_id}: {parsed_status['status']}")
+            
+            # Se KYC foi aprovado, iniciar processo de mint de NFT
+            if parsed_status['status'] == 'approved':
+                logger.info(f"🎯 KYC aprovado para usuário {external_user_id} - Iniciando processo de mint de NFT")
+                
+                try:
+                    # Importar utilitários de NFT
+                    from api.utils.nft import check_active_nft, cancel_nft, mint_nft
+                    
+                    # 1. Verificar se usuário já possui NFT ativo
+                    existing_nft = check_active_nft(int(external_user_id))
+                    
+                    if existing_nft:
+                        logger.info(f"⚠️  Usuário {external_user_id} já possui NFT ativo (ID: {existing_nft['nft_id']}) - Cancelando...")
+                        
+                        # 2. Cancelar NFT anterior
+                        cancel_result = cancel_nft(int(external_user_id), existing_nft['nft_id'])
+                        
+                        if cancel_result['success']:
+                            logger.info(f"✅ NFT anterior cancelado: {cancel_result['tx_hash']}")
+                        else:
+                            logger.error(f"❌ Erro ao cancelar NFT anterior: {cancel_result.get('error')}")
+                    
+                    # 3. Mintar novo NFT
+                    logger.info(f"🎨 Mintando novo NFT para usuário {external_user_id}...")
+                    
+                    mint_result = mint_nft(
+                        user_id=int(external_user_id),
+                        kyc_data={
+                            'applicant_id': applicant_id,
+                            'review_status': review_status,
+                            'review_result': review_result
+                        }
+                    )
+                    
+                    if mint_result['success']:
+                        logger.info(f"✅ NFT mintado com sucesso: ID={mint_result['nft_id']}, TX={mint_result['tx_hash']}")
+                    else:
+                        logger.error(f"❌ Erro ao mintar NFT: {mint_result.get('error')}")
+                        
+                except Exception as nft_error:
+                    logger.error(f"❌ Erro no processo de NFT: {str(nft_error)}")
+                    # Não falhar o webhook por causa do NFT
         
         return jsonify({'status': 'received'}), 200
         
