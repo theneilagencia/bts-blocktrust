@@ -1,78 +1,401 @@
-from flask import Blueprint, jsonify
+"""
+Admin Routes - Superadmin Area
+Protected endpoints for system administration, audit, and monitoring
+"""
+
+from flask import Blueprint, jsonify, request
 from api.utils.db import get_db_connection
+from api.utils.jwt_utils import (
+    generate_access_token, 
+    generate_refresh_token,
+    jwt_required,
+    blacklist_token,
+    log_audit
+)
+import bcrypt
 import os
+from datetime import datetime
 
 admin_bp = Blueprint('admin', __name__)
 
-@admin_bp.route('/migrate-kyc', methods=['GET', 'POST'])
-def migrate_kyc_columns():
-    """Adiciona colunas de KYC na tabela users"""
+
+# ============================================================================
+# AUTHENTICATION ENDPOINTS
+# ============================================================================
+
+@admin_bp.route('/login', methods=['POST'])
+def admin_login():
+    """
+    Admin login endpoint
+    POST /api/admin/login
+    Body: { "email": "admin@bts.com", "password": "123" }
+    """
     try:
+        data = request.get_json()
+        email = data.get('email')
+        password = data.get('password')
+        
+        if not email or not password:
+            return jsonify({'error': 'Email and password required'}), 400
+        
+        # Get user from database
         conn = get_db_connection()
         cur = conn.cursor()
         
-        # Verificar se as colunas já existem
         cur.execute("""
-            SELECT column_name 
-            FROM information_schema.columns 
-            WHERE table_name = 'users'
-        """)
-        existing_columns = [row['column_name'] for row in cur.fetchall()]
+            SELECT id, email, password, name, role 
+            FROM users 
+            WHERE email = %s
+        """, (email,))
         
-        columns_to_add = []
+        user = cur.fetchone()
+        cur.close()
+        conn.close()
         
-        # Adicionar colunas que não existem
-        if 'applicant_id' not in existing_columns:
-            cur.execute("ALTER TABLE users ADD COLUMN applicant_id VARCHAR(255)")
-            columns_to_add.append('applicant_id')
+        if not user:
+            return jsonify({'error': 'Invalid credentials'}), 401
         
-        if 'kyc_status' not in existing_columns:
-            cur.execute("ALTER TABLE users ADD COLUMN kyc_status VARCHAR(50) DEFAULT 'not_started'")
-            columns_to_add.append('kyc_status')
+        # Verify password
+        if not bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
+            return jsonify({'error': 'Invalid credentials'}), 401
         
-        if 'sumsub_data' not in existing_columns:
-            cur.execute("ALTER TABLE users ADD COLUMN sumsub_data TEXT")
-            columns_to_add.append('sumsub_data')
+        # Check if user is admin or superadmin
+        if user['role'] not in ['admin', 'superadmin']:
+            return jsonify({'error': 'Access denied. Admin privileges required.'}), 403
         
-        if 'liveness_status' not in existing_columns:
-            cur.execute("ALTER TABLE users ADD COLUMN liveness_status VARCHAR(50)")
-            columns_to_add.append('liveness_status')
+        # Generate tokens
+        access_token = generate_access_token(user['id'], user['email'], user['role'])
+        refresh_token = generate_refresh_token(user['id'], user['email'], user['role'])
         
-        if 'kyc_updated_at' not in existing_columns:
-            cur.execute("ALTER TABLE users ADD COLUMN kyc_updated_at TIMESTAMP")
-            columns_to_add.append('kyc_updated_at')
+        # Log audit
+        log_audit(
+            user_id=user['id'],
+            role=user['role'],
+            action='admin_login',
+            endpoint='/api/admin/login',
+            ip_address=request.remote_addr,
+            user_agent=request.headers.get('User-Agent')
+        )
         
-        conn.commit()
+        return jsonify({
+            'status': 'success',
+            'user': {
+                'id': str(user['id']),
+                'email': user['email'],
+                'name': user['name'],
+                'role': user['role']
+            },
+            'access_token': access_token,
+            'refresh_token': refresh_token
+        }), 200
         
-        # Verificar colunas finais
-        cur.execute("""
-            SELECT column_name, data_type 
-            FROM information_schema.columns 
-            WHERE table_name = 'users'
-            ORDER BY ordinal_position
-        """)
-        final_columns = [{'name': row['column_name'], 'type': row['data_type']} for row in cur.fetchall()]
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@admin_bp.route('/logout', methods=['POST'])
+@jwt_required()
+def admin_logout():
+    """
+    Admin logout endpoint (blacklist token)
+    POST /api/admin/logout
+    Headers: Authorization: Bearer <token>
+    """
+    try:
+        # Get token from header
+        auth_header = request.headers.get('Authorization')
+        token = auth_header.split(' ')[1]
+        
+        # Decode to get JTI and expiration
+        import jwt
+        payload = jwt.decode(token, os.getenv('JWT_SECRET_KEY', 'your-secret-key-change-in-production'), algorithms=['HS256'])
+        
+        # Blacklist token
+        blacklist_token(
+            jti=payload['jti'],
+            token_type=payload['type'],
+            user_id=payload['user_id'],
+            expires_at=datetime.fromtimestamp(payload['exp'])
+        )
+        
+        # Log audit
+        log_audit(
+            user_id=request.current_user['user_id'],
+            role=request.current_user['role'],
+            action='admin_logout',
+            endpoint='/api/admin/logout',
+            ip_address=request.remote_addr,
+            user_agent=request.headers.get('User-Agent')
+        )
+        
+        return jsonify({'status': 'success', 'message': 'Logged out successfully'}), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ============================================================================
+# AUDIT ENDPOINTS (Superadmin only)
+# ============================================================================
+
+@admin_bp.route('/audit', methods=['GET'])
+@jwt_required(allowed_roles=['superadmin'])
+def get_audit_logs():
+    """
+    Get audit logs
+    GET /api/admin/audit?limit=50&offset=0&action=admin_login
+    """
+    try:
+        limit = request.args.get('limit', 50, type=int)
+        offset = request.args.get('offset', 0, type=int)
+        action = request.args.get('action', None)
+        
+        conn = get_db_connection()
+        cur = conn.cursor()
+        
+        # Build query
+        query = """
+            SELECT 
+                a.id, a.user_id, a.role, a.action, a.endpoint,
+                a.ip_address, a.user_agent, a.request_data,
+                a.response_status, a.created_at,
+                u.email, u.name
+            FROM audit_logs a
+            LEFT JOIN users u ON a.user_id = u.id
+        """
+        
+        params = []
+        if action:
+            query += " WHERE a.action = %s"
+            params.append(action)
+        
+        query += " ORDER BY a.created_at DESC LIMIT %s OFFSET %s"
+        params.extend([limit, offset])
+        
+        cur.execute(query, params)
+        logs = cur.fetchall()
+        
+        # Get total count
+        count_query = "SELECT COUNT(*) as total FROM audit_logs"
+        if action:
+            count_query += " WHERE action = %s"
+            cur.execute(count_query, [action])
+        else:
+            cur.execute(count_query)
+        
+        total = cur.fetchone()['total']
         
         cur.close()
         conn.close()
         
+        # Log this audit request
+        log_audit(
+            user_id=request.current_user['user_id'],
+            role=request.current_user['role'],
+            action='view_audit_logs',
+            endpoint='/api/admin/audit',
+            ip_address=request.remote_addr,
+            user_agent=request.headers.get('User-Agent')
+        )
+        
         return jsonify({
             'status': 'success',
-            'message': 'Migration executada com sucesso',
-            'columns_added': columns_to_add,
-            'total_columns': len(final_columns),
-            'all_columns': final_columns
+            'total': total,
+            'limit': limit,
+            'offset': offset,
+            'logs': [dict(log) for log in logs]
         }), 200
         
     except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ============================================================================
+# USER MANAGEMENT ENDPOINTS (Superadmin only)
+# ============================================================================
+
+@admin_bp.route('/users', methods=['GET'])
+@jwt_required(allowed_roles=['superadmin'])
+def get_users():
+    """
+    Get all users
+    GET /api/admin/users?limit=50&offset=0
+    """
+    try:
+        limit = request.args.get('limit', 50, type=int)
+        offset = request.args.get('offset', 0, type=int)
+        
+        conn = get_db_connection()
+        cur = conn.cursor()
+        
+        cur.execute("""
+            SELECT 
+                id, email, name, role, kyc_status, liveness_status,
+                created_at, kyc_updated_at
+            FROM users
+            ORDER BY created_at DESC
+            LIMIT %s OFFSET %s
+        """, (limit, offset))
+        
+        users = cur.fetchall()
+        
+        # Get total count
+        cur.execute("SELECT COUNT(*) as total FROM users")
+        total = cur.fetchone()['total']
+        
+        cur.close()
+        conn.close()
+        
+        # Log audit
+        log_audit(
+            user_id=request.current_user['user_id'],
+            role=request.current_user['role'],
+            action='view_users',
+            endpoint='/api/admin/users',
+            ip_address=request.remote_addr,
+            user_agent=request.headers.get('User-Agent')
+        )
+        
         return jsonify({
-            'status': 'error',
-            'error': str(e)
-        }), 500
+            'status': 'success',
+            'total': total,
+            'limit': limit,
+            'offset': offset,
+            'users': [dict(user) for user in users]
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ============================================================================
+# SYSTEM HEALTH ENDPOINTS (Superadmin only)
+# ============================================================================
+
+@admin_bp.route('/health', methods=['GET'])
+@jwt_required(allowed_roles=['superadmin'])
+def get_system_health():
+    """
+    Get system health status
+    GET /api/admin/health
+    """
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        
+        # Database health
+        cur.execute("SELECT version()")
+        db_version = cur.fetchone()['version']
+        
+        # User statistics
+        cur.execute("SELECT COUNT(*) as total FROM users")
+        total_users = cur.fetchone()['total']
+        
+        cur.execute("SELECT COUNT(*) as total FROM users WHERE kyc_status = 'approved'")
+        approved_kyc = cur.fetchone()['total']
+        
+        # Recent activity (last 24h)
+        cur.execute("""
+            SELECT COUNT(*) as total FROM audit_logs 
+            WHERE created_at > NOW() - INTERVAL '24 hours'
+        """)
+        activity_24h = cur.fetchone()['total']
+        
+        cur.close()
+        conn.close()
+        
+        # Log audit
+        log_audit(
+            user_id=request.current_user['user_id'],
+            role=request.current_user['role'],
+            action='view_health',
+            endpoint='/api/admin/health',
+            ip_address=request.remote_addr,
+            user_agent=request.headers.get('User-Agent')
+        )
+        
+        return jsonify({
+            'status': 'success',
+            'health': {
+                'database': {
+                    'status': 'healthy',
+                    'version': db_version
+                },
+                'statistics': {
+                    'total_users': total_users,
+                    'approved_kyc': approved_kyc,
+                    'activity_24h': activity_24h
+                },
+                'timestamp': datetime.utcnow().isoformat()
+            }
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ============================================================================
+# MIGRATION ENDPOINTS (Legacy - kept for compatibility)
+# ============================================================================
+
+@admin_bp.route('/migrate', methods=['POST'])
+@jwt_required(allowed_roles=['superadmin'])
+def run_migration():
+    """
+    Run database migration
+    POST /api/admin/migrate
+    """
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        
+        # Read migration file
+        migration_path = os.path.join(os.path.dirname(__file__), '../../migrations/001_add_admin_features.sql')
+        
+        with open(migration_path, 'r') as f:
+            migration_sql = f.read()
+        
+        # Execute migration
+        cur.execute(migration_sql)
+        conn.commit()
+        
+        cur.close()
+        conn.close()
+        
+        # Log audit
+        log_audit(
+            user_id=request.current_user['user_id'],
+            role=request.current_user['role'],
+            action='run_migration',
+            endpoint='/api/admin/migrate',
+            ip_address=request.remote_addr,
+            user_agent=request.headers.get('User-Agent')
+        )
+        
+        return jsonify({
+            'status': 'success',
+            'message': 'Migration executed successfully'
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 
 @admin_bp.route('/debug-env', methods=['GET'])
+@jwt_required(allowed_roles=['superadmin'])
 def debug_env():
-    """Retorna variáveis de ambiente para debug"""
+    """Retorna variáveis de ambiente para debug (Superadmin only)"""
+    
+    # Log audit
+    log_audit(
+        user_id=request.current_user['user_id'],
+        role=request.current_user['role'],
+        action='view_debug_env',
+        endpoint='/api/admin/debug-env',
+        ip_address=request.remote_addr,
+        user_agent=request.headers.get('User-Agent')
+    )
+    
     return jsonify({
         'toolblox': {
             'mint_url': os.getenv('TOOLBLOX_MINT_IDENTITY_URL'),
