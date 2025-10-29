@@ -100,7 +100,7 @@ export default function Home() {
             <FileCheck className="w-12 h-12 mx-auto mb-4" />
             <h3 className="font-display text-xl font-bold mb-2">KYC Integrado</h3>
             <p className="text-gray-300">
-              Verificação de identidade via Sumsub com liveness e mint automático de NFT
+              Verificação de identidade via KYC com liveness e mint automático de NFT
             </p>
           </div>
 
