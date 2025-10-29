@@ -1,4 +1,4 @@
-from flask import Flask, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
 
@@ -70,6 +70,15 @@ def init_database():
 def serve_frontend(path):
     if path and os.path.exists(os.path.join(app.static_folder, path)):
         return send_from_directory(app.static_folder, path)
+    return send_from_directory(app.static_folder, 'index.html')
+
+# Handle 404 errors - serve index.html for React Router
+@app.errorhandler(404)
+def not_found(e):
+    # Se a rota começa com /api, retorna JSON
+    if request.path.startswith('/api/'):
+        return jsonify({'error': 'Not found'}), 404
+    # Caso contrário, serve o index.html (React Router)
     return send_from_directory(app.static_folder, 'index.html')
 
 if __name__ == '__main__':
