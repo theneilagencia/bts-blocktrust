@@ -19,9 +19,15 @@ export default function Login() {
     setLoading(true)
 
     try {
-      await login(email, password)
+      const userData = await login(email, password)
       showToast('success', 'Login realizado com sucesso!')
-      navigate('/dashboard')
+      
+      // Redirecionar baseado no role do usuário
+      if (userData.user?.role === 'superadmin' || userData.user?.role === 'admin') {
+        navigate('/admin')
+      } else {
+        navigate('/dashboard')
+      }
     } catch (error: any) {
       showToast('error', error.response?.data?.error || 'Erro ao fazer login')
     } finally {
