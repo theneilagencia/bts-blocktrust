@@ -1,0 +1,46 @@
+# Variáveis de Ambiente para Produção - Sumsub Real
+
+## Variáveis que precisam ser atualizadas no Render:
+
+### 1. SUMSUB_APP_TOKEN
+**Valor atual**: (desconhecido)
+**Novo valor**: prd:ePc2R1JUrZwuzplYhv3cwfzJ.UZt9oGTKYbcfA2HNvJevEZBMxymYN754
+
+### 2. SUMSUB_SECRET_KEY
+**Valor atual**: (desconhecido)
+**Novo valor**: dTgJiI6lFnAXeR2mu4WixaMxrKcn9ggY
+
+### 3. SUMSUB_LEVEL_NAME
+**Valor atual**: basic-kyc-level (provavelmente)
+**Novo valor**: basic-kyc
+
+### 4. MOCK_MODE
+**Valor atual**: false (já configurado)
+**Novo valor**: false (manter)
+
+---
+
+## Instruções para atualizar no Render:
+
+1. Acesse: https://dashboard.render.com/web/srv-d3v6722li9vc73cj3lsg/env
+2. Clique em "Edit"
+3. Localize cada variável e atualize o valor
+4. Clique em "Save, rebuild, and deploy"
+
+---
+
+## Verificação pós-deploy:
+
+Após o deploy, testar:
+```bash
+curl -X POST https://bts-blocktrust.onrender.com/api/kyc/init \
+  -H "Authorization: Bearer <TOKEN>" \
+  -H "Content-Type: application/json"
+```
+
+Deve retornar:
+- ✅ `accessToken` (token real da Sumsub)
+- ✅ `applicantId` (ID real, não mock_applicant_*)
+- ✅ `mock_mode: false`
+- ❌ NÃO deve retornar "Mock: ..." na mensagem
+
