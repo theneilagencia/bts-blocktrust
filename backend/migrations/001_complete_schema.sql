@@ -45,11 +45,13 @@ CREATE TABLE IF NOT EXISTS events (
     transaction_hash VARCHAR(255),
     block_number BIGINT,
     event_data JSONB,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_event_type (event_type),
-    INDEX idx_tx_hash (transaction_hash),
-    INDEX idx_created_at (created_at)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Índices para tabela events
+CREATE INDEX IF NOT EXISTS idx_event_type ON events(event_type);
+CREATE INDEX IF NOT EXISTS idx_tx_hash ON events(transaction_hash);
+CREATE INDEX IF NOT EXISTS idx_events_created_at ON events(created_at);
 
 -- Tabela de assinaturas de documentos
 CREATE TABLE IF NOT EXISTS document_signatures (
@@ -62,10 +64,12 @@ CREATE TABLE IF NOT EXISTS document_signatures (
     blockchain_tx VARCHAR(255),
     pgp_signature TEXT,
     pgp_fingerprint VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_user_id (user_id),
-    INDEX idx_file_hash (file_hash)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Índices para tabela document_signatures
+CREATE INDEX IF NOT EXISTS idx_doc_sig_user_id ON document_signatures(user_id);
+CREATE INDEX IF NOT EXISTS idx_file_hash ON document_signatures(file_hash);
 
 -- Tabela de cancelamentos de NFT
 CREATE TABLE IF NOT EXISTS nft_cancellations (
@@ -86,10 +90,12 @@ CREATE TABLE IF NOT EXISTS failsafe_events (
     document_hash VARCHAR(255),
     ip_address VARCHAR(50),
     user_agent TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_user_id (user_id),
-    INDEX idx_created_at (created_at)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Índices para tabela failsafe_events
+CREATE INDEX IF NOT EXISTS idx_failsafe_user_id ON failsafe_events(user_id);
+CREATE INDEX IF NOT EXISTS idx_failsafe_created_at ON failsafe_events(created_at);
 
 -- Tabela de logs de assinatura dupla
 CREATE TABLE IF NOT EXISTS dual_sign_logs (
@@ -113,10 +119,12 @@ CREATE TABLE IF NOT EXISTS metrics (
     status VARCHAR(50) NOT NULL,
     latency_ms INTEGER,
     error_message TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_check_name (check_name),
-    INDEX idx_created_at (created_at)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Índices para tabela metrics
+CREATE INDEX IF NOT EXISTS idx_check_name ON metrics(check_name);
+CREATE INDEX IF NOT EXISTS idx_metrics_created_at ON metrics(created_at);
 
 -- Tabela de heartbeat do listener
 CREATE TABLE IF NOT EXISTS listener_heartbeat (
@@ -130,6 +138,7 @@ INSERT INTO listener_heartbeat (last_block, last_heartbeat)
 VALUES (0, CURRENT_TIMESTAMP)
 ON CONFLICT DO NOTHING;
 
+-- Comentários das tabelas
 COMMENT ON TABLE users IS 'Tabela principal de usuários com todos os campos necessários';
 COMMENT ON TABLE events IS 'Eventos capturados da blockchain pelo listener';
 COMMENT ON TABLE document_signatures IS 'Registro de assinaturas de documentos (normal e failsafe)';
