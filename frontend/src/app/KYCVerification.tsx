@@ -24,7 +24,7 @@ export function KYCVerification() {
   const [kycStatus, setKycStatus] = useState<KYCStatus | null>(null);
   const [error, setError] = useState('');
   const [sdkLoaded, setSdkLoaded] = useState(false);
-  const [mockMode, setMockMode] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   useEffect(() => {
     // Carrega SDK do Sumsub
@@ -75,17 +75,15 @@ export function KYCVerification() {
 
       const { accessToken, applicantId, mock_mode } = response.data;
 
-      // Se estiver em modo mock, simula aprovação
+      // Verificar se a API retornou erro
+      if (!accessToken || !applicantId) {
+        throw new Error('Falha ao inicializar verificação. Dados inválidos retornados.');
+      }
+
+      // Verificar se modo mock está ativo (não deveria estar em produção)
       if (mock_mode) {
-        setMockMode(true);
-        setError('');
-        alert('🎭 Modo Mock Ativado\n\nO sistema está em modo de demonstração.\nSeu KYC será aprovado automaticamente em alguns segundos.');
-        
-        // Simula processo de verificação
-        setTimeout(() => {
-          fetchKYCStatus();
-          setLoading(false);
-        }, 3000);
+        setError('⚠️ Sistema em modo de teste. Entre em contato com o suporte.');
+        setLoading(false);
         return;
       }
 
@@ -115,6 +113,7 @@ export function KYCVerification() {
           .withOptions({ addViewportTag: false, adaptIframeHeight: true })
           .on('idCheck.stepCompleted', (payload: any) => {
             console.log('Step completed:', payload);
+            setUploadProgress(prev => Math.min(prev + 25, 100));
           })
           .on('idCheck.onError', (error: any) => {
             console.error('Verification error:', error);
@@ -137,7 +136,30 @@ export function KYCVerification() {
 
     } catch (err: any) {
       console.error('Erro ao iniciar KYC:', err);
-      setError(err.response?.data?.error || 'Erro ao iniciar verificação');
+      
+      // Extrair mensagem de erro detalhada
+      let errorMessage = 'Erro ao iniciar verificação';
+      
+      if (err.response?.data?.error) {
+        errorMessage = err.response.data.error;
+      } else if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      // Mensagens amigáveis para erros comuns
+      if (errorMessage.includes('HMAC') || errorMessage.includes('signature')) {
+        errorMessage = 'Erro de autenticação. Verifique suas credenciais.';
+      } else if (errorMessage.includes('Unauthorized') || errorMessage.includes('401')) {
+        errorMessage = 'Credenciais inválidas. Entre em contato com o suporte.';
+      } else if (errorMessage.includes('levelName')) {
+        errorMessage = 'Configuração de verificação inválida. Entre em contato com o suporte.';
+      } else if (errorMessage.includes('network') || errorMessage.includes('timeout')) {
+        errorMessage = 'Falha na conexão. Verifique sua internet e tente novamente.';
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -314,11 +336,20 @@ export function KYCVerification() {
               {/* Container para o SDK do Sumsub */}
               <div id="sumsub-websdk-container" className="mb-6"></div>
 
-              {mockMode && (
-                <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <p className="text-yellow-800 text-sm">
-                    🎭 <strong>Modo Mock:</strong> Sistema em demonstração. O KYC será aprovado automaticamente.
-                  </p>
+              {loading && uploadProgress > 0 && (
+                <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-blue-800 text-sm font-semibold">
+                      Enviando documentos...
+                    </p>
+                    <span className="text-blue-600 text-sm">{uploadProgress}%</span>
+                  </div>
+                  <div className="w-full bg-blue-200 rounded-full h-2">
+                    <div 
+                      className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${uploadProgress}%` }}
+                    ></div>
+                  </div>
                 </div>
               )}
 
@@ -328,7 +359,7 @@ export function KYCVerification() {
                   disabled={loading}
                   className="flex-1"
                 >
-                  {loading ? 'Iniciando...' : mockMode ? 'Simular Verificação' : 'Iniciar Verificação'}
+                  {loading ? 'Iniciando...' : 'Iniciar Verificação'}
                 </Button>
                 <Button
                   onClick={() => navigate('/dashboard')}
