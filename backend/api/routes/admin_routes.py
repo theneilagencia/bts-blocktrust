@@ -338,6 +338,44 @@ def get_system_health():
 # MIGRATION ENDPOINTS (Legacy - kept for compatibility)
 # ============================================================================
 
+@admin_bp.route('/setup-audit-logs', methods=['POST'])
+def setup_audit_logs():
+    """Create audit_logs table (development only)"""
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        
+        # Create audit_logs table
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS audit_logs (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER REFERENCES users(id),
+                email VARCHAR(255),
+                action VARCHAR(255) NOT NULL,
+                ip_address VARCHAR(45),
+                user_agent TEXT,
+                details JSONB,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        
+        # Create indexes
+        cur.execute("CREATE INDEX IF NOT EXISTS idx_audit_logs_user_id ON audit_logs(user_id)")
+        cur.execute("CREATE INDEX IF NOT EXISTS idx_audit_logs_created_at ON audit_logs(created_at DESC)")
+        cur.execute("CREATE INDEX IF NOT EXISTS idx_audit_logs_action ON audit_logs(action)")
+        
+        conn.commit()
+        cur.close()
+        conn.close()
+        
+        return jsonify({
+            'status': 'success',
+            'message': 'audit_logs table created successfully'
+        }), 200
+            
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @admin_bp.route('/promote-admin/<email>', methods=['POST'])
 def promote_admin(email):
     """Promote user to superadmin (development only)"""
