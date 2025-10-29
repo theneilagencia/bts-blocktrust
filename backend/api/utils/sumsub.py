@@ -124,14 +124,18 @@ def create_applicant(external_user_id, email, level_name=None):
     Returns:
         Dict com status e dados do applicant ou erro detalhado
     """
-    url = '/resources/applicants'
+    # CORREÇÃO: levelName deve ser passado como query parameter, não no body
+    level = level_name or SUMSUB_LEVEL_NAME
+    url = f'/resources/applicants?levelName={level}'
     method = 'POST'
     
     body = {
-        'externalUserId': str(external_user_id),
-        'email': email,
-        'levelName': level_name or SUMSUB_LEVEL_NAME
+        'externalUserId': str(external_user_id)
     }
+    
+    # Adicionar email apenas se fornecido (é opcional segundo a documentação)
+    if email:
+        body['email'] = email
     
     try:
         # Converter body para JSON string para assinatura HMAC
