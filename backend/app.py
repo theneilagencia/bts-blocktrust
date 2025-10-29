@@ -14,6 +14,7 @@ from api.routes.signature_routes import signature_bp
 from api.routes.explorer_routes import explorer_bp
 from api.routes.pgp_routes import pgp_bp, dual_bp
 from api.routes.failsafe_routes import failsafe_bp
+from api.routes.document_routes import document_bp
 
 app = Flask(__name__, static_folder="static", static_url_path="/")
 CORS(app)
@@ -31,6 +32,7 @@ app.register_blueprint(explorer_bp, url_prefix='/api/explorer')
 app.register_blueprint(pgp_bp)
 app.register_blueprint(dual_bp)
 app.register_blueprint(failsafe_bp, url_prefix='/api/failsafe')
+app.register_blueprint(document_bp, url_prefix='/api/document')
 
 # Health check
 @app.route('/api/health')

@@ -81,6 +81,26 @@ def init_db():
         )
     ''')
     
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS document_registrations (
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+            file_hash VARCHAR(255) NOT NULL,
+            document_name VARCHAR(500),
+            document_url TEXT,
+            blockchain_tx VARCHAR(255),
+            registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    
+    # Criar índices para document_registrations
+    try:
+        cur.execute('CREATE INDEX IF NOT EXISTS idx_doc_file_hash ON document_registrations(file_hash)')
+        cur.execute('CREATE INDEX IF NOT EXISTS idx_doc_user_id ON document_registrations(user_id)')
+    except Exception as e:
+        # Ignorar se os índices já existirem
+        pass
+    
     conn.commit()
     cur.close()
     conn.close()
