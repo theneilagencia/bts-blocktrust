@@ -6,7 +6,7 @@ from flask import Blueprint, request, jsonify
 import logging
 import bcrypt
 from api.auth import token_required
-from api.utils.database import get_db_connection
+from api.utils.db import get_db_connection
 
 logger = logging.getLogger(__name__)
 

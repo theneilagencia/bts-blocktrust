@@ -8,7 +8,7 @@ import datetime
 import os
 import logging
 import json
-from api.utils.database import get_db_connection
+from api.utils.db import get_db_connection
 
 logger = logging.getLogger(__name__)
 

@@ -7,7 +7,7 @@ import os
 import logging
 from typing import Dict, Optional
 from web3 import Web3
-from web3.middleware import geth_poa_middleware
+# geth_poa_middleware não é mais necessário no web3.py >= 6.0
 import json
 
 logger = logging.getLogger(__name__)
@@ -99,7 +99,7 @@ class NFTManager:
         self.w3 = Web3(Web3.HTTPProvider(POLYGON_RPC_URL))
         
         # Adicionar middleware para PoA (Polygon)
-        self.w3.middleware_onion.inject(geth_poa_middleware, layer=0)
+        # POA middleware não é mais necessário no web3.py >= 6.0
         
         # Verificar conexão
         if not self.w3.is_connected():

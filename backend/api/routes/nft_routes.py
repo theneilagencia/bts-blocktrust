@@ -7,7 +7,7 @@ import logging
 from api.utils.nft import nft_manager
 from api.utils.wallet import wallet_manager
 from api.auth import token_required
-from api.utils.database import get_db_connection
+from api.utils.db import get_db_connection
 
 logger = logging.getLogger(__name__)
 

@@ -8,7 +8,7 @@ import json
 import time
 import logging
 from web3 import Web3
-from web3.middleware import geth_poa_middleware
+# geth_poa_middleware não é mais necessário no web3.py >= 6.0
 import psycopg2
 from psycopg2.extras import Json
 
@@ -25,7 +25,7 @@ POLL_INTERVAL = int(os.getenv('LISTENER_POLL_INTERVAL', '15'))  # segundos
 
 # Conectar ao Web3
 w3 = Web3(Web3.HTTPProvider(POLYGON_RPC_URL))
-w3.middleware_onion.inject(geth_poa_middleware, layer=0)
+# POA middleware não é mais necessário no web3.py >= 6.0
 
 if not w3.is_connected():
     logger.error("❌ Não foi possível conectar ao Polygon Mumbai")
