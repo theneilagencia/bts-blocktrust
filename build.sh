@@ -2,10 +2,23 @@
 set -e
 
 echo "🚀 Building BTS Blocktrust..."
+echo "📍 Current directory: $(pwd)"
+echo "📂 Listing files:"
+ls -la
 
 # Build frontend
 echo "📦 Building frontend..."
+echo "📍 Checking if frontend/ exists..."
+if [ ! -d "frontend" ]; then
+  echo "❌ ERROR: frontend/ directory not found!"
+  echo "📂 Available directories:"
+  ls -la
+  exit 1
+fi
+
+echo "✅ frontend/ directory found!"
 cd frontend
+echo "📍 Now in: $(pwd)"
 echo "🗑️  Cleaning old build..."
 rm -rf node_modules .pnpm-store dist
 echo "📥 Installing dependencies..."
