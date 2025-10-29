@@ -15,6 +15,7 @@ from api.routes.explorer_routes import explorer_bp
 from api.routes.pgp_routes import pgp_bp, dual_bp
 from api.routes.failsafe_routes import failsafe_bp
 from api.routes.document_routes import document_bp
+from api.routes.user_management_routes import user_mgmt_bp
 
 app = Flask(__name__, static_folder="static", static_url_path="/")
 CORS(app)
@@ -33,6 +34,7 @@ app.register_blueprint(pgp_bp)
 app.register_blueprint(dual_bp)
 app.register_blueprint(failsafe_bp, url_prefix='/api/failsafe')
 app.register_blueprint(document_bp, url_prefix='/api/document')
+app.register_blueprint(user_mgmt_bp, url_prefix='/api/admin')
 
 # Health check
 @app.route('/api/health')

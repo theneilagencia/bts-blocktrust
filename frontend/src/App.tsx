@@ -9,6 +9,8 @@ import Admin from './app/Admin'
 import { KYCVerification } from './app/KYCVerification'
 import AdminLogin from './app/admin/AdminLogin'
 import AdminDashboard from './app/admin/AdminDashboard'
+import UserList from './app/admin/UserList'
+import UserEdit from './app/admin/UserEdit'
 import { AuthProvider, useAuth } from './lib/auth'
 import Toaster from './components/Toaster'
 import Explorer from './components/Explorer'
@@ -40,6 +42,8 @@ function App() {
           <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/users" element={<AdminRoute><UserList /></AdminRoute>} />
+          <Route path="/admin/users/:userId" element={<AdminRoute><UserEdit /></AdminRoute>} />
           <Route path="/explorer" element={<Explorer />} />
           <Route path="/dual-signature" element={<PrivateRoute><DualSignature /></PrivateRoute>} />
         </Routes>
