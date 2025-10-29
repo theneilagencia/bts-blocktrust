@@ -43,7 +43,7 @@ def admin_login():
         cur = conn.cursor()
         
         cur.execute("""
-            SELECT id, email, password, name, role 
+            SELECT id, email, password_hash, name, role 
             FROM users 
             WHERE email = %s
         """, (email,))
@@ -56,7 +56,7 @@ def admin_login():
             return jsonify({'error': 'Invalid credentials'}), 401
         
         # Verify password
-        if not bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
+        if not bcrypt.checkpw(password.encode('utf-8'), user['password_hash'].encode('utf-8')):
             return jsonify({'error': 'Invalid credentials'}), 401
         
         # Check if user is admin or superadmin
