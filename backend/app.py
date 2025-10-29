@@ -17,7 +17,7 @@ from api.routes.failsafe_routes import failsafe_bp
 from api.routes.document_routes import document_bp
 from api.routes.user_management_routes import user_mgmt_bp
 
-app = Flask(__name__, static_folder="static", static_url_path="/")
+app = Flask(__name__, static_folder="static", static_url_path="")
 CORS(app)
 
 # Register blueprints
