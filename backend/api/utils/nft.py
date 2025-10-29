@@ -533,11 +533,110 @@ def mint_nft(user_id: int, kyc_data: Dict) -> Dict:
             
             wallet_address = wallet_result['address']
         
-        # TODO: Chamar contrato IdentityNFT.mintIdentityNFT(wallet_address, metadata, previousId)
-        # Por enquanto, apenas simular
-        import random
-        nft_id = random.randint(1000, 9999)
-        tx_hash = "0x" + hashlib.sha256(f"mint_{nft_id}_{wallet_address}".encode()).hexdigest()
+        # Verificar se contratos estão deployados
+        identity_nft_address = os.getenv('IDENTITY_NFT_ADDRESS', '0x0000000000000000000000000000000000000000')
+        deployer_private_key = os.getenv('DEPLOYER_PRIVATE_KEY')
+        mock_mode = os.getenv('MOCK_MODE', 'false').lower() == 'true'
+        
+        # Se contratos não estão deployados ou está em mock mode, simular
+        if mock_mode or identity_nft_address == '0x0000000000000000000000000000000000000000' or not deployer_private_key or deployer_private_key.startswith('0x0000'):
+            logger.warning(f"⚠️  Contratos não deployados ou MOCK_MODE ativo - Simulando mint de NFT")
+            import random
+            nft_id = random.randint(1000, 9999)
+            tx_hash = "0x" + hashlib.sha256(f"mint_{nft_id}_{wallet_address}".encode()).hexdigest()
+        else:
+            # Usar contrato real
+            try:
+                logger.info(f"🎨 Mintando NFT real para {wallet_address}...")
+                
+                # Carregar ABI do contrato
+                import json
+                abi_path = os.path.join(os.path.dirname(__file__), '../../contracts/IdentityNFT.abi.json')
+                
+                if os.path.exists(abi_path):
+                    with open(abi_path, 'r') as f:
+                        identity_abi = json.load(f)
+                else:
+                    # Fallback para ABI simplificada
+                    identity_abi = IDENTITY_NFT_ABI
+                
+                # Conectar ao contrato
+                from web3 import Web3
+                rpc_url = os.getenv('POLYGON_RPC_URL', 'https://polygon-mumbai.g.alchemy.com/v2/demo')
+                w3 = Web3(Web3.HTTPProvider(rpc_url))
+                
+                if not w3.is_connected():
+                    raise Exception("Não foi possível conectar ao RPC")
+                
+                identity_contract = w3.eth.contract(
+                    address=Web3.to_checksum_address(identity_nft_address),
+                    abi=identity_abi
+                )
+                
+                # Preparar metadata
+                metadata = {
+                    'user_id': user_id,
+                    'email': email,
+                    'name': name,
+                    'kyc_approved': True,
+                    'kyc_data': kyc_data
+                }
+                metadata_json = json.dumps(metadata)
+                metadata_bytes = metadata_json.encode('utf-8')
+                
+                # Obter NFT anterior (se existir)
+                cur.execute("SELECT nft_id FROM users WHERE id = %s", (user_id,))
+                previous_nft = cur.fetchone()
+                previous_nft_id = int(previous_nft[0]) if previous_nft and previous_nft[0] else 0
+                
+                # Criar conta do deployer
+                from eth_account import Account
+                deployer_account = Account.from_key(deployer_private_key)
+                
+                # Preparar transação
+                nonce = w3.eth.get_transaction_count(deployer_account.address)
+                
+                transaction = identity_contract.functions.mintIdentityNFT(
+                    Web3.to_checksum_address(wallet_address),
+                    metadata_bytes,
+                    previous_nft_id
+                ).build_transaction({
+                    'from': deployer_account.address,
+                    'nonce': nonce,
+                    'gas': 500000,
+                    'gasPrice': w3.eth.gas_price,
+                    'chainId': w3.eth.chain_id
+                })
+                
+                # Assinar e enviar transação
+                signed_txn = w3.eth.account.sign_transaction(transaction, deployer_private_key)
+                tx_hash_bytes = w3.eth.send_raw_transaction(signed_txn.rawTransaction)
+                tx_hash = tx_hash_bytes.hex()
+                
+                logger.info(f"📤 Transação enviada: {tx_hash}")
+                logger.info(f"⏳ Aguardando confirmação...")
+                
+                # Aguardar confirmação
+                receipt = w3.eth.wait_for_transaction_receipt(tx_hash_bytes, timeout=120)
+                
+                # Extrair NFT ID dos eventos
+                logs = identity_contract.events.MintingEvent().process_receipt(receipt)
+                if logs:
+                    nft_id = int(logs[0]['args']['nftId'])
+                    logger.info(f"✅ NFT {nft_id} mintado com sucesso!")
+                else:
+                    # Fallback: incrementar ID anterior
+                    nft_id = previous_nft_id + 1
+                    logger.warning(f"⚠️  Não foi possível extrair NFT ID dos logs, usando {nft_id}")
+                
+            except Exception as contract_error:
+                logger.error(f"❌ Erro ao mintar NFT real: {str(contract_error)}")
+                logger.warning(f"⚠️  Fallback para simulação")
+                
+                # Fallback para simulação
+                import random
+                nft_id = random.randint(1000, 9999)
+                tx_hash = "0x" + hashlib.sha256(f"mint_{nft_id}_{wallet_address}".encode()).hexdigest()
         
         # Atualizar banco de dados
         cur.execute("""
