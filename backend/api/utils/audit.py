@@ -5,7 +5,7 @@ Registra eventos importantes no banco de dados para auditoria
 
 import logging
 from datetime import datetime
-from api.database import get_db_connection
+from api.utils.db import get_db_connection
 
 logger = logging.getLogger(__name__)
 
