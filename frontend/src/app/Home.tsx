@@ -292,7 +292,7 @@ export default function Home() {
       </section>
 
       {/* How It Works Section - CARDS HORIZONTAIS */}
-      <section className="py-20">
+      <section className="py-24 bg-[#0B1727]">
         <div className="container-custom">
           <motion.div 
             initial="hidden"
@@ -302,10 +302,10 @@ export default function Home() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">
+            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-[#F5F7FA] mb-4">
               Como Funciona o Blocktrust
             </h2>
-            <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-[#D1D5DB] max-w-2xl mx-auto leading-relaxed">
               Processo simples e seguro em três etapas principais
             </p>
           </motion.div>
@@ -333,9 +333,9 @@ export default function Home() {
               </motion.div>
               <div className="flex items-center gap-3 mb-4">
                 <span className="text-4xl font-bold text-brand-blue">1</span>
-                <h3 className="font-display text-xl font-bold text-gray-900">Cadastro e Verificação</h3>
+                <h3 className="font-display text-xl font-bold text-[#F5F7FA]">Cadastro e Verificação</h3>
               </div>
-              <div className="space-y-3 text-sm text-gray-600 leading-relaxed">
+              <div className="space-y-3 text-sm text-[#D1D5DB] leading-relaxed">
                 <p>
                   Crie uma conta com <strong>duas senhas</strong>: a senha principal e uma senha de emergência (failsafe), 
                   usada apenas em situações de risco.
@@ -370,9 +370,9 @@ export default function Home() {
               </motion.div>
               <div className="flex items-center gap-3 mb-4">
                 <span className="text-4xl font-bold text-brand-blue">2</span>
-                <h3 className="font-display text-xl font-bold text-gray-900">Assinatura de Documentos</h3>
+                <h3 className="font-display text-xl font-bold text-[#F5F7FA]">Assinatura de Documentos</h3>
               </div>
-              <div className="space-y-3 text-sm text-gray-600 leading-relaxed">
+              <div className="space-y-3 text-sm text-[#D1D5DB] leading-relaxed">
                 <p>
                   (Opcional) Importe sua <strong>chave pública PGP</strong> para ampliar a compatibilidade com sistemas externos.
                 </p>
@@ -418,9 +418,9 @@ export default function Home() {
               </motion.div>
               <div className="flex items-center gap-3 mb-4">
                 <span className="text-4xl font-bold text-brand-blue">3</span>
-                <h3 className="font-display text-xl font-bold text-gray-900">Verificação e Auditoria</h3>
+                <h3 className="font-display text-xl font-bold text-[#F5F7FA]">Verificação e Auditoria</h3>
               </div>
-              <div className="space-y-3 text-sm text-gray-600 leading-relaxed">
+              <div className="space-y-3 text-sm text-[#D1D5DB] leading-relaxed">
                 <p>
                   Qualquer pessoa pode verificar a autenticidade de um documento por meio do <strong>QR code do certificado</strong> 
                   ou do <strong>Explorer Blocktrust</strong>.
@@ -446,7 +446,7 @@ export default function Home() {
                     <span>Logs em tempo real, com atualização automática</span>
                   </li>
                 </ul>
-                <p className="font-medium text-gray-900">
+                <p className="font-medium text-[#F5F7FA]">
                   Cada ação é registrada de forma pública, imutável e auditável — transformando confiança em código.
                 </p>
               </div>
@@ -456,7 +456,7 @@ export default function Home() {
       </section>
 
       {/* Failsafe Protocol Section - COM PULSAÇÃO */}
-      <section className="py-20 bg-gradient-to-br from-red-900/20 via-orange-900/20 to-red-900/20">
+      <section className="py-24 bg-black">
         <div className="container-custom">
           <motion.div 
             initial="hidden"
@@ -483,15 +483,15 @@ export default function Home() {
                 }}
                 className="flex-shrink-0"
               >
-                <div className="w-16 h-16 bg-red-500 text-white rounded-2xl flex items-center justify-center">
+                <div className="w-16 h-16 bg-[#EF4444] text-white rounded-2xl flex items-center justify-center">
                   <ShieldAlert className="w-8 h-8" />
                 </div>
               </motion.div>
               <div>
-                <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">
+                <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
                   Protocolo de Emergência (Failsafe)
                 </h2>
-                <p className="text-lg text-gray-700 leading-relaxed">
+                <p className="text-lg md:text-xl text-[#F5F5F5] leading-relaxed">
                   Proteção avançada para situações de coerção ou ameaça
                 </p>
               </div>
@@ -502,9 +502,9 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 md:p-10 shadow-xl border border-white/20 hover:shadow-2xl transition-shadow duration-300"
+              className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 md:p-10 shadow-xl border border-[#1F2937] hover:shadow-2xl transition-all duration-300"
             >
-              <div className="space-y-6 text-gray-300 leading-relaxed">
+              <div className="space-y-6 text-[#F5F5F5] leading-relaxed text-base">
                 <p>
                   Em caso de <strong>coerção, fraude ou ameaça</strong>, o usuário pode acionar o modo de emergência com sua <strong>senha failsafe</strong>.
                 </p>
@@ -519,13 +519,13 @@ export default function Home() {
                 <p>
                   O usuário pode, depois, <strong>refazer o KYC e emitir um novo NFT (v+1)</strong> para recuperar sua identidade digital.
                 </p>
-                <div className="bg-blue-50 border-l-4 border-brand-blue p-4 rounded-r-lg">
-                  <p className="font-medium text-gray-900">
+                <div className="bg-[#EF4444]/10 border-l-4 border-[#EF4444] p-4 rounded-r-lg">
+                  <p className="font-medium text-[#F5F7FA]">
                     ⚠️ <strong>Importante:</strong> O NFT não é apagado nem removido — ele é <strong>marcado como inválido</strong>, 
                     permanecendo visível na blockchain para garantir rastreabilidade e auditoria.
                   </p>
                 </div>
-                <p className="font-medium text-gray-900">
+                <p className="font-medium text-[#F5F7FA]">
                   Isso preserva a <strong>cadeia de auditoria simbiótica</strong>, garantindo rastreabilidade e transparência total ao longo do tempo.
                 </p>
               </div>
@@ -553,7 +553,7 @@ export default function Home() {
             <Link to="/register">
               <Button 
                 size="lg" 
-                className="bg-white text-brand-navy hover:bg-gray-100 text-base px-8 py-4 shadow-lg hover:scale-105 transition-all duration-300"
+                className="bg-[#007AFF] text-white hover:bg-[#005BBB] text-base sm:text-sm px-6 py-3 rounded-xl font-semibold shadow-lg hover:scale-105 transition-all duration-300 focus:ring-2 focus:ring-offset-2 focus:ring-[#007AFF]"
               >
                 Criar Conta Gratuita
                 <ArrowRight className="ml-2 w-5 h-5" />
