@@ -338,6 +338,43 @@ def get_system_health():
 # MIGRATION ENDPOINTS (Legacy - kept for compatibility)
 # ============================================================================
 
+@admin_bp.route('/create-admin', methods=['POST'])
+def create_admin():
+    """Create or update superadmin user (development only)"""
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        
+        # Check if admin already exists
+        cur.execute("SELECT id FROM users WHERE email = %s", ('admin@bts.com',))
+        existing = cur.fetchone()
+        
+        if existing:
+            # Update existing user to superadmin
+            password_hash = bcrypt.hashpw('123'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            cur.execute(
+                "UPDATE users SET password_hash = %s, role = %s WHERE email = %s",
+                (password_hash, 'superadmin', 'admin@bts.com')
+            )
+            conn.commit()
+            cur.close()
+            conn.close()
+            return jsonify({'status': 'success', 'message': 'Admin user updated'}), 200
+        else:
+            # Create new admin user
+            password_hash = bcrypt.hashpw('123'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            cur.execute(
+                "INSERT INTO users (email, password_hash, role) VALUES (%s, %s, %s) RETURNING id",
+                ('admin@bts.com', password_hash, 'superadmin')
+            )
+            conn.commit()
+            cur.close()
+            conn.close()
+            return jsonify({'status': 'success', 'message': 'Admin user created'}), 201
+            
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @admin_bp.route('/migrate', methods=['POST'])
 @jwt_required(allowed_roles=['superadmin'])
 def run_migration():
