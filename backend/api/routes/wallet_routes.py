@@ -85,8 +85,11 @@ def initialize_wallet(current_user):
         }), 201
         
     except Exception as e:
+        import traceback
+        error_traceback = traceback.format_exc()
         logger.error(f"❌ Erro ao inicializar carteira: {str(e)}")
-        return jsonify({'error': 'Erro ao criar carteira', 'details': str(e)}), 500
+        logger.error(f"Traceback completo: {error_traceback}")
+        return jsonify({'error': 'Erro ao criar carteira', 'details': str(e), 'traceback': error_traceback}), 500
 
 @wallet_bp.route('/info', methods=['GET'])
 @token_required
