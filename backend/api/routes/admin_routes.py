@@ -43,7 +43,7 @@ def admin_login():
         cur = conn.cursor()
         
         cur.execute("""
-            SELECT id, email, password_hash, name, role 
+            SELECT id, email, password_hash, role 
             FROM users 
             WHERE email = %s
         """, (email,))
@@ -82,7 +82,7 @@ def admin_login():
             'user': {
                 'id': str(user['id']),
                 'email': user['email'],
-                'name': user['name'],
+                'name': user['email'].split('@')[0],  # Use email prefix as name
                 'role': user['role']
             },
             'access_token': access_token,

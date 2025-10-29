@@ -57,12 +57,11 @@ BEGIN
         -- Create new superadmin user
         -- Password: 123 (hashed with bcrypt)
         -- Hash: $2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5GyYIr3TJUe4W
-        INSERT INTO users (id, email, password_hash, name, role, created_at)
+        INSERT INTO users (id, email, password_hash, role, created_at)
         VALUES (
             gen_random_uuid(),
             'admin@bts.com',
             '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5GyYIr3TJUe4W',
-            'Super Admin',
             'superadmin',
             NOW()
         )
