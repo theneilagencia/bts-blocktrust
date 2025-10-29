@@ -338,6 +338,35 @@ def get_system_health():
 # MIGRATION ENDPOINTS (Legacy - kept for compatibility)
 # ============================================================================
 
+@admin_bp.route('/promote-admin/<email>', methods=['POST'])
+def promote_admin(email):
+    """Promote user to superadmin (development only)"""
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        
+        cur.execute(
+            "UPDATE users SET role = %s WHERE email = %s RETURNING id, email, role",
+            ('superadmin', email)
+        )
+        
+        user = cur.fetchone()
+        conn.commit()
+        cur.close()
+        conn.close()
+        
+        if user:
+            return jsonify({
+                'status': 'success',
+                'message': f'User {email} promoted to superadmin',
+                'user': dict(user)
+            }), 200
+        else:
+            return jsonify({'error': 'User not found'}), 404
+            
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @admin_bp.route('/create-admin', methods=['POST'])
 def create_admin():
     """Create or update superadmin user (development only)"""
