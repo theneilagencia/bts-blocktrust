@@ -1,0 +1,25 @@
+# Variáveis de Ambiente Faltantes para Blocktrust v1.4
+# Adicionar no Render Dashboard → Environment
+
+# Blockchain Configuration
+NETWORK=polygonMumbai
+POLYGON_RPC_URL=https://polygon-mumbai.g.alchemy.com/v2/demo
+DEPLOYER_PRIVATE_KEY=0x0000000000000000000000000000000000000000000000000000000000000001
+
+# Smart Contract Addresses (serão atualizados após deploy)
+IDENTITY_NFT_ADDRESS=0x0000000000000000000000000000000000000000
+PROOF_REGISTRY_ADDRESS=0x0000000000000000000000000000000000000000
+FAILSAFE_ADDRESS=0x0000000000000000000000000000000000000000
+
+# Sumsub (já existe SUMSUB_APP_TOKEN, adicionar SECRET_KEY)
+SUMSUB_SECRET_KEY=PLACEHOLDER_SECRET_KEY
+
+# Production Mode
+MOCK_MODE=false
+
+# SLO Targets
+SLO_LATENCY_MS=800
+SLO_UPTIME_TARGET=99.5
+
+# NOTA: Valores marcados como PLACEHOLDER devem ser substituídos por valores reais antes do deploy em produção
+
