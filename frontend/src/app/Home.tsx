@@ -101,10 +101,10 @@ export default function Home() {
               variants={fadeInUp}
               transition={{ duration: 0.6, delay: 0.6 }}
             >
-              <Link to="/register" className="inline-block">
+              <Link to="/register" className="inline-block no-underline">
                 <Button 
                   size="lg" 
-                  className="bg-brand-blue hover:bg-blue-700 text-white text-base px-8 py-4 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+                  className="bg-brand-blue hover:bg-blue-700 text-white text-sm md:text-base px-6 md:px-8 py-3 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 whitespace-nowrap"
                 >
                   Começar Agora
                   <ArrowRight className="ml-2 w-5 h-5" />
@@ -550,10 +550,10 @@ export default function Home() {
             <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
               Crie sua identidade digital soberana agora e tenha controle total sobre suas assinaturas e documentos
             </p>
-            <Link to="/register" className="inline-block">
+            <Link to="/register" className="inline-block no-underline">
               <Button 
                 size="lg" 
-                className="bg-[#007AFF] text-white hover:bg-[#005BBB] text-base sm:text-sm px-6 py-3 rounded-xl font-semibold shadow-lg hover:scale-105 transition-all duration-300 focus:ring-2 focus:ring-offset-2 focus:ring-[#007AFF] !bg-[#007AFF]"
+                className="bg-[#007AFF] text-white hover:bg-[#005BBB] text-sm md:text-base px-6 md:px-8 py-3 rounded-xl font-semibold shadow-lg hover:scale-105 transition-all duration-300 focus:ring-2 focus:ring-offset-2 focus:ring-[#007AFF] !bg-[#007AFF] whitespace-nowrap"
               >
                 Criar Conta Gratuita
                 <ArrowRight className="ml-2 w-5 h-5" />
