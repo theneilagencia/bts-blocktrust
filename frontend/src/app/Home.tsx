@@ -107,7 +107,6 @@ export default function Home() {
                   className="bg-brand-blue hover:bg-blue-700 text-white text-sm md:text-base px-6 md:px-8 py-3 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 whitespace-nowrap"
                 >
                   Começar Agora
-                  <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
             </motion.div>
@@ -556,7 +555,6 @@ export default function Home() {
                 className="bg-[#007AFF] text-white hover:bg-[#005BBB] text-sm md:text-base px-6 md:px-8 py-3 rounded-xl font-semibold shadow-lg hover:scale-105 transition-all duration-300 focus:ring-2 focus:ring-offset-2 focus:ring-[#007AFF] !bg-[#007AFF] whitespace-nowrap"
               >
                 Criar Conta Gratuita
-                <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </Link>
           </motion.div>
