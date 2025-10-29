@@ -1,0 +1,19 @@
+Variáveis SUMSUB atuais no Render:
+
+SUMSUB_LEVEL_NAME=basic-kyc
+SUMSUB_SECRET_KEY=dTgJiI6lFnAXeR2mu4WixaMxrKcn9ggY
+SUMSUB_APP_TOKEN=prd:ePc2R1JUrZwuzplYhv3cwfzJ.UZt9oGTKYbcfA2HNvJevEZBMxymYN754
+
+Erro identificado:
+❌ ERRO AO CRIAR APPLICANT [400]: {
+  "code": 400,
+  "correlationId": "2473b69c21864365eea6f10dccd5e114",
+  "description": "Existing level should be specified to create an applicant"
+}
+
+Causa:
+O levelName "basic-kyc" não existe na conta Sumsub.
+
+Solução:
+Verificar no painel Sumsub qual é o nome correto do level e atualizar a variável SUMSUB_LEVEL_NAME.
+

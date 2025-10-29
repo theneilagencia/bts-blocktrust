@@ -1,12 +1,56 @@
 import { Link } from 'react-router-dom'
-import { Shield, FileCheck, Lock, Globe, Wallet, Key, AlertTriangle, FileSignature, CheckCircle, ArrowRight } from 'lucide-react'
+import { Shield, FileCheck, Lock, Globe, Wallet, Key, AlertTriangle, FileSignature, CheckCircle, ArrowRight, UserCheck, SearchCheck, ShieldAlert } from 'lucide-react'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import Button from '../components/Button'
 
+// Animation variants
+const fadeInUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 }
+}
+
+const fadeIn = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1 }
+}
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+}
+
+const scaleIn = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: { 
+    opacity: 1, 
+    scale: 1,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 15
+    }
+  }
+}
+
 export default function Home() {
+  const { scrollYProgress } = useScroll()
+  const heroY = useTransform(scrollYProgress, [0, 0.3], [0, 50])
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0.8])
+
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-md border-b border-gray-200 z-50">
+      <motion.nav 
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ type: "spring", stiffness: 100, damping: 20 }}
+        className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-md border-b border-gray-200 z-50"
+      >
         <div className="container-custom py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -15,38 +59,68 @@ export default function Home() {
             </div>
             <div className="flex items-center space-x-3">
               <Link to="/login">
-                <Button variant="secondary" className="text-sm">Entrar</Button>
+                <Button variant="secondary" className="text-sm hover:scale-105 transition-transform">Entrar</Button>
               </Link>
               <Link to="/register">
-                <Button className="text-sm">Criar Conta</Button>
+                <Button className="text-sm hover:scale-105 transition-transform">Criar Conta</Button>
               </Link>
             </div>
           </div>
         </div>
-      </nav>
+      </motion.nav>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 bg-gradient-to-b from-gray-50 to-white">
+      <section className="pt-32 pb-20 bg-gradient-to-b from-gray-50 to-white overflow-hidden">
         <div className="container-custom">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+          <motion.div 
+            style={{ y: heroY, opacity: heroOpacity }}
+            className="max-w-4xl mx-auto text-center"
+          >
+            <motion.h1 
+              initial="hidden"
+              animate="visible"
+              variants={fadeInUp}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight"
+            >
               Identidade Digital Soberana e Assinatura Blockchain
-            </h1>
-            <p className="text-lg md:text-xl text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed">
+            </motion.h1>
+            <motion.p 
+              initial="hidden"
+              animate="visible"
+              variants={fadeInUp}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="text-lg md:text-xl text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed"
+            >
               Sistema completo de identidade verificada (KYC), carteira autocustodiada, 
               NFT SoulBound e assinatura dupla (PGP + Blockchain) com protocolo de emergência
-            </p>
-            <Link to="/register">
-              <Button size="lg" className="text-base px-8 py-4 shadow-lg hover:shadow-xl transition-shadow">
-                Começar Agora
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
-            </Link>
-          </div>
+            </motion.p>
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={fadeInUp}
+              transition={{ duration: 0.6, delay: 0.6 }}
+            >
+              <Link to="/register">
+                <Button 
+                  size="lg" 
+                  className="text-base px-8 py-4 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+                >
+                  Começar Agora
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
+              </Link>
+            </motion.div>
+          </motion.div>
 
           {/* Video Section */}
-          <div className="mt-16 max-w-5xl mx-auto">
-            <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl border border-gray-200">
+          <motion.div 
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+            className="mt-16 max-w-5xl mx-auto"
+          >
+            <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl border border-gray-200 hover:shadow-3xl transition-shadow duration-300">
               <iframe
                 className="w-full h-full"
                 src="https://www.youtube.com/embed/HAz8u9dWt28"
@@ -57,250 +131,362 @@ export default function Home() {
                 loading="lazy"
               ></iframe>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Features Grid */}
       <section className="py-20 bg-white">
         <div className="container-custom">
-          <div className="text-center mb-16">
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInUp}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16"
+          >
             <h2 className="font-display text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Módulos e Funcionalidades
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Tecnologia de ponta para garantir segurança, privacidade e controle total da sua identidade digital
             </p>
-          </div>
+          </motion.div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={staggerContainer}
+            className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
+          >
             {/* Card 1 */}
-            <div className="group bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-xl hover:border-brand-blue transition-all duration-300">
-              <div className="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-blue transition-colors">
+            <motion.div 
+              variants={scaleIn}
+              whileHover={{ y: -8, transition: { duration: 0.2 } }}
+              className="group bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-xl hover:border-brand-blue transition-all duration-300"
+            >
+              <motion.div 
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                className="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-blue transition-colors"
+              >
                 <Wallet className="w-7 h-7 text-brand-blue group-hover:text-white transition-colors" />
-              </div>
+              </motion.div>
               <h3 className="font-display text-lg font-bold text-gray-900 mb-3">Carteira Proprietária</h3>
               <p className="text-sm text-gray-600 leading-relaxed">
                 Geração e gerenciamento de chaves privadas secp256k1 com criptografia local
               </p>
-            </div>
+            </motion.div>
 
             {/* Card 2 */}
-            <div className="group bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-xl hover:border-brand-blue transition-all duration-300">
-              <div className="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-blue transition-colors">
+            <motion.div 
+              variants={scaleIn}
+              whileHover={{ y: -8, transition: { duration: 0.2 } }}
+              className="group bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-xl hover:border-brand-blue transition-all duration-300"
+            >
+              <motion.div 
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                className="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-blue transition-colors"
+              >
                 <Shield className="w-7 h-7 text-brand-blue group-hover:text-white transition-colors" />
-              </div>
+              </motion.div>
               <h3 className="font-display text-lg font-bold text-gray-900 mb-3">NFT SoulBound</h3>
               <p className="text-sm text-gray-600 leading-relaxed">
                 Identidade única não-transferível vinculada ao KYC com cancelamento automático
               </p>
-            </div>
+            </motion.div>
 
             {/* Card 3 */}
-            <div className="group bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-xl hover:border-brand-blue transition-all duration-300">
-              <div className="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-blue transition-colors">
+            <motion.div 
+              variants={scaleIn}
+              whileHover={{ y: -8, transition: { duration: 0.2 } }}
+              className="group bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-xl hover:border-brand-blue transition-all duration-300"
+            >
+              <motion.div 
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                className="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-blue transition-colors"
+              >
                 <FileSignature className="w-7 h-7 text-brand-blue group-hover:text-white transition-colors" />
-              </div>
+              </motion.div>
               <h3 className="font-display text-lg font-bold text-gray-900 mb-3">Assinatura Dupla</h3>
               <p className="text-sm text-gray-600 leading-relaxed">
                 PGP + Blockchain para máxima segurança e não-repúdio de documentos
               </p>
-            </div>
+            </motion.div>
 
             {/* Card 4 */}
-            <div className="group bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-xl hover:border-red-500 transition-all duration-300">
-              <div className="w-14 h-14 bg-red-50 rounded-xl flex items-center justify-center mb-6 group-hover:bg-red-500 transition-colors">
+            <motion.div 
+              variants={scaleIn}
+              whileHover={{ y: -8, transition: { duration: 0.2 } }}
+              className="group bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-xl hover:border-red-500 transition-all duration-300"
+            >
+              <motion.div 
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                className="w-14 h-14 bg-red-50 rounded-xl flex items-center justify-center mb-6 group-hover:bg-red-500 transition-colors"
+              >
                 <AlertTriangle className="w-7 h-7 text-red-500 group-hover:text-white transition-colors" />
-              </div>
+              </motion.div>
               <h3 className="font-display text-lg font-bold text-gray-900 mb-3">Protocolo Failsafe</h3>
               <p className="text-sm text-gray-600 leading-relaxed">
                 Senha de emergência para situações de coação com cancelamento automático de NFT
               </p>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           {/* Additional Features */}
-          <div className="grid md:grid-cols-3 gap-8 mt-16">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={staggerContainer}
+            className="grid md:grid-cols-3 gap-8 mt-16"
+          >
+            <motion.div variants={scaleIn} className="text-center group">
+              <motion.div 
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                className="w-16 h-16 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:shadow-lg transition-shadow"
+              >
                 <FileCheck className="w-8 h-8 text-brand-blue" />
-              </div>
+              </motion.div>
               <h3 className="font-display text-xl font-bold text-gray-900 mb-3">KYC Integrado</h3>
               <p className="text-gray-600 leading-relaxed">
                 Verificação de identidade via KYC com liveness e mint automático de NFT
               </p>
-            </div>
+            </motion.div>
 
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <motion.div variants={scaleIn} className="text-center group">
+              <motion.div 
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                className="w-16 h-16 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:shadow-lg transition-shadow"
+              >
                 <Lock className="w-8 h-8 text-brand-blue" />
-              </div>
+              </motion.div>
               <h3 className="font-display text-xl font-bold text-gray-900 mb-3">Privacidade Total</h3>
               <p className="text-gray-600 leading-relaxed">
                 Chaves privadas nunca saem do dispositivo. Criptografia AES-256 + PBKDF2
               </p>
-            </div>
+            </motion.div>
 
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <motion.div variants={scaleIn} className="text-center group">
+              <motion.div 
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                className="w-16 h-16 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:shadow-lg transition-shadow"
+              >
                 <Globe className="w-8 h-8 text-brand-blue" />
-              </div>
+              </motion.div>
               <h3 className="font-display text-xl font-bold text-gray-900 mb-3">Blockchain Polygon</h3>
               <p className="text-gray-600 leading-relaxed">
                 Registro imutável e verificável em blockchain pública de baixo custo
               </p>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
-      {/* How It Works Section */}
+      {/* How It Works Section - CARDS HORIZONTAIS */}
       <section className="py-20 bg-gray-50">
         <div className="container-custom">
-          <div className="text-center mb-16">
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInUp}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16"
+          >
             <h2 className="font-display text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Como Funciona o Blocktrust
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Processo simples e seguro em três etapas principais
             </p>
-          </div>
+          </motion.div>
 
-          <div className="max-w-5xl mx-auto space-y-16">
-            {/* Step 1 */}
-            <div className="flex flex-col md:flex-row gap-8 items-start">
-              <div className="flex-shrink-0">
-                <div className="w-16 h-16 bg-brand-blue text-white rounded-2xl flex items-center justify-center font-display text-2xl font-bold">
-                  1
-                </div>
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={staggerContainer}
+            className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto"
+          >
+            {/* Card 1 - Cadastro e Verificação */}
+            <motion.div 
+              variants={scaleIn}
+              whileHover={{ y: -8, scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300 }}
+              className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl border border-gray-200 hover:border-brand-blue transition-all duration-300"
+            >
+              <motion.div 
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                className="w-16 h-16 bg-brand-blue text-white rounded-2xl flex items-center justify-center mb-6 group-hover:shadow-xl transition-shadow"
+              >
+                <UserCheck className="w-8 h-8" />
+              </motion.div>
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-4xl font-bold text-brand-blue">1</span>
+                <h3 className="font-display text-xl font-bold text-gray-900">Cadastro e Verificação</h3>
               </div>
-              <div className="flex-1">
-                <h3 className="font-display text-2xl font-bold text-gray-900 mb-4">Cadastro e Verificação</h3>
-                <div className="space-y-4 text-gray-700 leading-relaxed">
-                  <p>
-                    Crie uma conta com duas senhas: a senha principal e uma senha de emergência (failsafe), 
-                    usada apenas em situações de risco.
-                  </p>
-                  <p>
-                    Realize a verificação de identidade (KYC) com prova de vida diretamente pelo aplicativo.
-                  </p>
-                  <p>
-                    O sistema gera automaticamente uma carteira digital autocustodiada, onde suas chaves privadas 
-                    são armazenadas localmente e criptografadas.
-                  </p>
-                  <p>
-                    Um NFT SoulBound — único, intransferível e auditável — é emitido na blockchain Polygon e 
-                    vinculado permanentemente à sua identidade digital.
-                  </p>
-                  <p>
-                    Esse NFT funciona como seu passaporte digital, comprovando identidade e legitimidade em qualquer operação.
-                  </p>
-                </div>
+              <div className="space-y-3 text-sm text-gray-600 leading-relaxed">
+                <p>
+                  Crie uma conta com <strong>duas senhas</strong>: a senha principal e uma senha de emergência (failsafe), 
+                  usada apenas em situações de risco.
+                </p>
+                <p>
+                  Realize a <strong>verificação de identidade (KYC)</strong> com prova de vida diretamente pelo aplicativo.
+                </p>
+                <p>
+                  O sistema gera automaticamente uma <strong>carteira digital autocustodiada</strong>, onde suas chaves privadas 
+                  são armazenadas localmente e criptografadas.
+                </p>
+                <p>
+                  Um <strong>NFT SoulBound</strong> — único, intransferível e auditável — é emitido na blockchain Polygon e 
+                  vinculado permanentemente à sua identidade digital.
+                </p>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="border-t border-gray-300"></div>
+            {/* Card 2 - Assinatura de Documentos */}
+            <motion.div 
+              variants={scaleIn}
+              whileHover={{ y: -8, scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300 }}
+              className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl border border-gray-200 hover:border-brand-blue transition-all duration-300"
+            >
+              <motion.div 
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                className="w-16 h-16 bg-brand-blue text-white rounded-2xl flex items-center justify-center mb-6 group-hover:shadow-xl transition-shadow"
+              >
+                <FileSignature className="w-8 h-8" />
+              </motion.div>
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-4xl font-bold text-brand-blue">2</span>
+                <h3 className="font-display text-xl font-bold text-gray-900">Assinatura de Documentos</h3>
+              </div>
+              <div className="space-y-3 text-sm text-gray-600 leading-relaxed">
+                <p>
+                  (Opcional) Importe sua <strong>chave pública PGP</strong> para ampliar a compatibilidade com sistemas externos.
+                </p>
+                <p>
+                  Faça o <strong>upload do documento</strong> a ser assinado.
+                </p>
+                <p>
+                  O sistema valida seu <strong>NFT ativo</strong> na blockchain, garantindo que sua identidade digital está íntegra.
+                </p>
+                <p>
+                  O documento é assinado com <strong>dupla camada de segurança</strong>:
+                </p>
+                <ul className="space-y-2 ml-4">
+                  <li className="flex items-start">
+                    <CheckCircle className="w-4 h-4 text-brand-blue mr-2 mt-0.5 flex-shrink-0" />
+                    <span><strong>ECDSA</strong>, com sua chave privada local Blocktrust.</span>
+                  </li>
+                  <li className="flex items-start">
+                    <CheckCircle className="w-4 h-4 text-brand-blue mr-2 mt-0.5 flex-shrink-0" />
+                    <span><strong>PGP</strong>, para compatibilidade adicional com outras plataformas.</span>
+                  </li>
+                </ul>
+                <p>
+                  Apenas o <strong>hash criptográfico</strong> e os metadados de auditoria são registrados na blockchain — 
+                  o conteúdo do documento <strong>nunca sai do seu dispositivo</strong>.
+                </p>
+              </div>
+            </motion.div>
 
-            {/* Step 2 */}
-            <div className="flex flex-col md:flex-row gap-8 items-start">
-              <div className="flex-shrink-0">
-                <div className="w-16 h-16 bg-brand-blue text-white rounded-2xl flex items-center justify-center font-display text-2xl font-bold">
-                  2
-                </div>
+            {/* Card 3 - Verificação e Auditoria */}
+            <motion.div 
+              variants={scaleIn}
+              whileHover={{ y: -8, scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300 }}
+              className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl border border-gray-200 hover:border-brand-blue transition-all duration-300"
+            >
+              <motion.div 
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                className="w-16 h-16 bg-brand-blue text-white rounded-2xl flex items-center justify-center mb-6 group-hover:shadow-xl transition-shadow"
+              >
+                <SearchCheck className="w-8 h-8" />
+              </motion.div>
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-4xl font-bold text-brand-blue">3</span>
+                <h3 className="font-display text-xl font-bold text-gray-900">Verificação e Auditoria</h3>
               </div>
-              <div className="flex-1">
-                <h3 className="font-display text-2xl font-bold text-gray-900 mb-4">Assinatura de Documentos</h3>
-                <div className="space-y-4 text-gray-700 leading-relaxed">
-                  <p>
-                    (Opcional) Importe sua chave pública PGP para ampliar a compatibilidade com sistemas externos.
-                  </p>
-                  <p>
-                    Faça o upload do documento a ser assinado.
-                  </p>
-                  <p>
-                    O sistema valida seu NFT ativo na blockchain, garantindo que sua identidade digital está íntegra.
-                  </p>
-                  <p>
-                    O documento é assinado com dupla camada de segurança:
-                  </p>
-                  <ul className="space-y-2 ml-6">
-                    <li className="flex items-start">
-                      <CheckCircle className="w-5 h-5 text-brand-blue mr-3 mt-0.5 flex-shrink-0" />
-                      <span>ECDSA, com sua chave privada local Blocktrust.</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle className="w-5 h-5 text-brand-blue mr-3 mt-0.5 flex-shrink-0" />
-                      <span>PGP, para compatibilidade adicional com outras plataformas.</span>
-                    </li>
-                  </ul>
-                  <p>
-                    Apenas o hash criptográfico e os metadados de auditoria são registrados na blockchain — 
-                    o conteúdo do documento nunca sai do seu dispositivo.
-                  </p>
-                  <p>
-                    A assinatura é verificável, mas o conteúdo permanece totalmente privado.
-                  </p>
-                </div>
+              <div className="space-y-3 text-sm text-gray-600 leading-relaxed">
+                <p>
+                  Qualquer pessoa pode verificar a autenticidade de um documento por meio do <strong>QR code do certificado</strong> 
+                  ou do <strong>Explorer Blocktrust</strong>.
+                </p>
+                <p>
+                  A consulta pública exibe o <strong>status do NFT</strong>, o hash do documento e o histórico completo de eventos 
+                  diretamente na blockchain Polygon.
+                </p>
+                <p>
+                  O <strong>painel de auditoria</strong> oferece:
+                </p>
+                <ul className="space-y-2 ml-4">
+                  <li className="flex items-start">
+                    <CheckCircle className="w-4 h-4 text-brand-blue mr-2 mt-0.5 flex-shrink-0" />
+                    <span>Histórico de assinaturas e cancelamentos</span>
+                  </li>
+                  <li className="flex items-start">
+                    <CheckCircle className="w-4 h-4 text-brand-blue mr-2 mt-0.5 flex-shrink-0" />
+                    <span>Registro de eventos on-chain (Minting, Proof, Failsafe, etc.)</span>
+                  </li>
+                  <li className="flex items-start">
+                    <CheckCircle className="w-4 h-4 text-brand-blue mr-2 mt-0.5 flex-shrink-0" />
+                    <span>Logs em tempo real, com atualização automática</span>
+                  </li>
+                </ul>
+                <p className="font-medium text-gray-900">
+                  Cada ação é registrada de forma pública, imutável e auditável — transformando confiança em código.
+                </p>
               </div>
-            </div>
-
-            <div className="border-t border-gray-300"></div>
-
-            {/* Step 3 */}
-            <div className="flex flex-col md:flex-row gap-8 items-start">
-              <div className="flex-shrink-0">
-                <div className="w-16 h-16 bg-brand-blue text-white rounded-2xl flex items-center justify-center font-display text-2xl font-bold">
-                  3
-                </div>
-              </div>
-              <div className="flex-1">
-                <h3 className="font-display text-2xl font-bold text-gray-900 mb-4">Verificação e Auditoria</h3>
-                <div className="space-y-4 text-gray-700 leading-relaxed">
-                  <p>
-                    Qualquer pessoa pode verificar a autenticidade de um documento por meio do QR code do certificado 
-                    ou do Explorer Blocktrust.
-                  </p>
-                  <p>
-                    A consulta pública exibe o status do NFT, o hash do documento e o histórico completo de eventos 
-                    diretamente na blockchain Polygon.
-                  </p>
-                  <p>
-                    O painel de auditoria oferece:
-                  </p>
-                  <ul className="space-y-2 ml-6">
-                    <li className="flex items-start">
-                      <CheckCircle className="w-5 h-5 text-brand-blue mr-3 mt-0.5 flex-shrink-0" />
-                      <span>Histórico de assinaturas e cancelamentos</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle className="w-5 h-5 text-brand-blue mr-3 mt-0.5 flex-shrink-0" />
-                      <span>Registro de eventos on-chain (Minting, Proof, Failsafe, etc.)</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle className="w-5 h-5 text-brand-blue mr-3 mt-0.5 flex-shrink-0" />
-                      <span>Logs em tempo real, com atualização automática.</span>
-                    </li>
-                  </ul>
-                  <p>
-                    Cada ação é registrada de forma pública, imutável e auditável — transformando confiança em código.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Failsafe Protocol Section */}
-      <section className="py-20 bg-gradient-to-br from-red-50 to-orange-50">
+      {/* Failsafe Protocol Section - COM PULSAÇÃO */}
+      <section className="py-20 bg-gradient-to-br from-gray-100 via-blue-50 to-gray-100">
         <div className="container-custom">
-          <div className="max-w-4xl mx-auto">
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInUp}
+            transition={{ duration: 0.6 }}
+            className="max-w-4xl mx-auto"
+          >
             <div className="flex items-start gap-6 mb-8">
-              <div className="flex-shrink-0">
+              <motion.div 
+                animate={{ 
+                  scale: [1, 1.1, 1],
+                  boxShadow: [
+                    "0 0 0 0 rgba(239, 68, 68, 0.4)",
+                    "0 0 0 10px rgba(239, 68, 68, 0)",
+                    "0 0 0 0 rgba(239, 68, 68, 0)"
+                  ]
+                }}
+                transition={{ 
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+                className="flex-shrink-0"
+              >
                 <div className="w-16 h-16 bg-red-500 text-white rounded-2xl flex items-center justify-center">
-                  <AlertTriangle className="w-8 h-8" />
+                  <ShieldAlert className="w-8 h-8" />
                 </div>
-              </div>
+              </motion.div>
               <div>
                 <h2 className="font-display text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                   Protocolo de Emergência (Failsafe)
@@ -311,48 +497,69 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl p-8 md:p-10 shadow-xl border border-gray-200">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="bg-white rounded-2xl p-8 md:p-10 shadow-xl border border-gray-200 hover:shadow-2xl transition-shadow duration-300"
+            >
               <div className="space-y-6 text-gray-700 leading-relaxed">
                 <p>
-                  Em caso de coerção, fraude ou ameaça, o usuário pode acionar o modo de emergência com sua senha failsafe.
+                  Em caso de <strong>coerção, fraude ou ameaça</strong>, o usuário pode acionar o modo de emergência com sua <strong>senha failsafe</strong>.
                 </p>
                 <p>
-                  O sistema gera uma assinatura fake visualmente idêntica à real, enganando o invasor.
+                  O sistema gera uma <strong>"assinatura fake"</strong> — visualmente idêntica à real — que engana o invasor, 
+                  protegendo você e seus documentos legítimos.
                 </p>
                 <p>
-                  Simultaneamente, o NFT ativo é automaticamente marcado como inválido na blockchain, impedindo futuras 
+                  Simultaneamente, o <strong>NFT ativo é automaticamente marcado como inválido</strong> na blockchain, impedindo futuras 
                   assinaturas e acionando o protocolo de segurança.
                 </p>
                 <p>
-                  O usuário pode, depois, refazer o KYC e emitir um novo NFT (v+1) para recuperar sua identidade digital.
+                  O usuário pode, depois, <strong>refazer o KYC e emitir um novo NFT (v+1)</strong> para recuperar sua identidade digital.
                 </p>
-                <p>
-                  O NFT não é apagado nem removido — ele permanece registrado na blockchain, apenas marcado como inválido.
-                </p>
+                <div className="bg-blue-50 border-l-4 border-brand-blue p-4 rounded-r-lg">
+                  <p className="font-medium text-gray-900">
+                    ⚠️ <strong>Importante:</strong> O NFT não é apagado nem removido — ele é <strong>marcado como inválido</strong>, 
+                    permanecendo visível na blockchain para garantir rastreabilidade e auditoria.
+                  </p>
+                </div>
                 <p className="font-medium text-gray-900">
-                  Isso preserva a cadeia de auditoria simbiótica, garantindo rastreabilidade e transparência total ao longo do tempo.
+                  Isso preserva a <strong>cadeia de auditoria simbiótica</strong>, garantindo rastreabilidade e transparência total ao longo do tempo.
                 </p>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
       {/* CTA Section */}
       <section className="py-20 bg-brand-navy text-white">
         <div className="container-custom text-center">
-          <h2 className="font-display text-3xl md:text-5xl font-bold mb-6">
-            Pronto para começar?
-          </h2>
-          <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
-            Crie sua identidade digital soberana agora e tenha controle total sobre suas assinaturas e documentos
-          </p>
-          <Link to="/register">
-            <Button size="lg" className="bg-white text-brand-navy hover:bg-gray-100 text-base px-8 py-4 shadow-lg">
-              Criar Conta Gratuita
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
-          </Link>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInUp}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="font-display text-3xl md:text-5xl font-bold mb-6">
+              Pronto para começar?
+            </h2>
+            <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
+              Crie sua identidade digital soberana agora e tenha controle total sobre suas assinaturas e documentos
+            </p>
+            <Link to="/register">
+              <Button 
+                size="lg" 
+                className="bg-white text-brand-navy hover:bg-gray-100 text-base px-8 py-4 shadow-lg hover:scale-105 transition-all duration-300"
+              >
+                Criar Conta Gratuita
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Button>
+            </Link>
+          </motion.div>
         </div>
       </section>
 
