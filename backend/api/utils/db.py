@@ -9,6 +9,11 @@ load_dotenv()
 
 DATABASE_URL = os.getenv('DATABASE_URL')
 
+# psycopg2 não aceita o prefixo +psycopg2, apenas SQLAlchemy aceita
+# Remover +psycopg2 se presente na URL para compatibilidade com psycopg2
+if DATABASE_URL and '+psycopg2' in DATABASE_URL:
+    DATABASE_URL = DATABASE_URL.replace('postgresql+psycopg2://', 'postgresql://')
+
 # Testar conexão ao importar o módulo
 test_connection()
 
