@@ -41,6 +41,18 @@ app.register_blueprint(user_mgmt_bp, url_prefix='/api/admin')
 def health():
     return {'service': 'BTS Blocktrust API', 'status': 'ok'}
 
+# Database health check
+@app.route('/api/db/health', methods=['GET'])
+def db_health():
+    from api.utils.db_engine import engine
+    from sqlalchemy import text
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        return {'success': True, 'message': 'DB connection OK'}, 200
+    except Exception as e:
+        return {'success': False, 'error': str(e)}, 500
+
 # Init database endpoint
 @app.route('/api/init-db', methods=['POST'])
 def init_database():
