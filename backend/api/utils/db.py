@@ -37,6 +37,34 @@ def init_db():
         # Ignorar se a coluna já existir
         pass
     
+    # Migration: Adicionar colunas de gerenciamento de usuários
+    try:
+        cur.execute('''
+            ALTER TABLE users 
+            ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'active',
+            ADD COLUMN IF NOT EXISTS plan VARCHAR(50) DEFAULT 'free',
+            ADD COLUMN IF NOT EXISTS password_reset_required BOOLEAN DEFAULT FALSE,
+            ADD COLUMN IF NOT EXISTS last_login TIMESTAMP
+        ''')
+    except Exception as e:
+        # Ignorar se as colunas já existirem
+        pass
+    
+    # Migration: Adicionar colunas de carteira
+    try:
+        cur.execute('''
+            ALTER TABLE users 
+            ADD COLUMN IF NOT EXISTS wallet_id VARCHAR(255),
+            ADD COLUMN IF NOT EXISTS wallet_address VARCHAR(255),
+            ADD COLUMN IF NOT EXISTS encrypted_private_key TEXT,
+            ADD COLUMN IF NOT EXISTS wallet_salt VARCHAR(255),
+            ADD COLUMN IF NOT EXISTS wallet_created_at TIMESTAMP,
+            ADD COLUMN IF NOT EXISTS nft_active BOOLEAN DEFAULT FALSE
+        ''')
+    except Exception as e:
+        # Ignorar se as colunas já existirem
+        pass
+    
     cur.execute('''
         CREATE TABLE IF NOT EXISTS identities (
             id SERIAL PRIMARY KEY,
