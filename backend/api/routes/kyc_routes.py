@@ -15,6 +15,7 @@ from api.utils.sumsub import (
     validate_credentials
 )
 from api.utils.db import get_db_connection
+from api.utils.audit import log_kyc_event, log_nft_event
 import logging
 
 logger = logging.getLogger(__name__)
@@ -345,6 +346,15 @@ def webhook():
             
             logger.info(f"✅ Status KYC atualizado para usuário {external_user_id}: {parsed_status['status']}")
             
+            # Registrar evento de auditoria
+            log_kyc_event(
+                user_id=int(external_user_id),
+                event_type=parsed_status['status'],
+                applicant_id=applicant_id,
+                review_status=review_status,
+                details={'review_result': review_result}
+            )
+            
             # Se KYC foi aprovado, iniciar processo de mint de NFT
             if parsed_status['status'] == 'approved':
                 logger.info(f"🎯 KYC aprovado para usuário {external_user_id} - Iniciando processo de mint de NFT")
@@ -381,6 +391,15 @@ def webhook():
                     
                     if mint_result['success']:
                         logger.info(f"✅ NFT mintado com sucesso: ID={mint_result['nft_id']}, TX={mint_result['tx_hash']}")
+                        
+                        # Registrar evento de auditoria do NFT
+                        log_nft_event(
+                            user_id=int(external_user_id),
+                            event_type='minted',
+                            nft_id=mint_result['nft_id'],
+                            tx_hash=mint_result['tx_hash'],
+                            details={'kyc_applicant_id': applicant_id}
+                        )
                     else:
                         logger.error(f"❌ Erro ao mintar NFT: {mint_result.get('error')}")
                         
