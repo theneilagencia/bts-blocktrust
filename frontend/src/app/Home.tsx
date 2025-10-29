@@ -121,62 +121,124 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Fluxos de Uso */}
+        {/* Como Funciona */}
         <div className="mt-20 bg-white/5 backdrop-blur-sm rounded-2xl p-12">
-          <h2 className="font-display text-3xl font-bold text-center mb-8">
-            Como Funciona
+          <h2 className="font-display text-3xl font-bold text-center mb-12">
+            Como Funciona o Blocktrust
           </h2>
-          <div className="grid md:grid-cols-2 gap-8">
+          
+          <div className="space-y-12">
+            {/* 1. Cadastro e Verificação */}
             <div>
-              <h3 className="font-display text-xl font-bold mb-4 flex items-center">
-                <span className="bg-brand-accent text-brand-navy w-8 h-8 rounded-full flex items-center justify-center mr-3">1</span>
-                Cadastro e Verificação
-              </h3>
-              <ul className="space-y-2 text-gray-300 ml-11">
-                <li>• Crie conta com senha normal e senha de emergência</li>
-                <li>• Complete o processo de KYC (verificação de identidade)</li>
-                <li>• Sistema gera automaticamente sua carteira proprietária</li>
-                <li>• NFT SoulBound é mintado e vinculado à sua identidade</li>
-              </ul>
+              <h3 className="font-display text-2xl font-bold mb-6">1. Cadastro e Verificação</h3>
+              <div className="space-y-4 text-gray-300 leading-relaxed">
+                <p>
+                  Crie uma conta com duas senhas: a senha principal e uma senha de emergência (failsafe), 
+                  usada apenas em situações de risco.
+                </p>
+                <p>
+                  Realize a verificação de identidade (KYC) com prova de vida diretamente pelo aplicativo.
+                </p>
+                <p>
+                  O sistema gera automaticamente uma carteira digital autocustodiada, onde suas chaves privadas 
+                  são armazenadas localmente e criptografadas.
+                </p>
+                <p>
+                  Um NFT SoulBound — único, intransferível e auditável — é emitido na blockchain Polygon e 
+                  vinculado permanentemente à sua identidade digital.
+                </p>
+                <p>
+                  Esse NFT funciona como seu passaporte digital, comprovando identidade e legitimidade em qualquer operação.
+                </p>
+              </div>
             </div>
 
+            <hr className="border-white/20" />
+
+            {/* 2. Assinatura de Documentos */}
             <div>
-              <h3 className="font-display text-xl font-bold mb-4 flex items-center">
-                <span className="bg-brand-accent text-brand-navy w-8 h-8 rounded-full flex items-center justify-center mr-3">2</span>
-                Assinatura de Documentos
-              </h3>
-              <ul className="space-y-2 text-gray-300 ml-11">
-                <li>• Importe sua chave pública PGP (opcional)</li>
-                <li>• Faça upload do documento para assinar</li>
-                <li>• Sistema valida seu NFT ativo na blockchain</li>
-                <li>• Assinatura dupla (PGP + ECDSA) é registrada on-chain</li>
-              </ul>
+              <h3 className="font-display text-2xl font-bold mb-6">2. Assinatura de Documentos</h3>
+              <div className="space-y-4 text-gray-300 leading-relaxed">
+                <p>
+                  (Opcional) Importe sua chave pública PGP para ampliar a compatibilidade com sistemas externos.
+                </p>
+                <p>
+                  Faça o upload do documento a ser assinado.
+                </p>
+                <p>
+                  O sistema valida seu NFT ativo na blockchain, garantindo que sua identidade digital está íntegra.
+                </p>
+                <p>
+                  O documento é assinado com dupla camada de segurança:
+                </p>
+                <ul className="list-disc list-inside ml-4 space-y-2">
+                  <li>ECDSA, com sua chave privada local Blocktrust.</li>
+                  <li>PGP, para compatibilidade adicional com outras plataformas.</li>
+                </ul>
+                <p>
+                  Apenas o hash criptográfico e os metadados de auditoria são registrados na blockchain — 
+                  o conteúdo do documento nunca sai do seu dispositivo.
+                </p>
+                <p>
+                  A assinatura é verificável, mas o conteúdo permanece totalmente privado.
+                </p>
+              </div>
             </div>
 
+            <hr className="border-white/20" />
+
+            {/* 3. Verificação e Auditoria */}
             <div>
-              <h3 className="font-display text-xl font-bold mb-4 flex items-center">
-                <span className="bg-brand-accent text-brand-navy w-8 h-8 rounded-full flex items-center justify-center mr-3">3</span>
-                Verificação e Auditoria
-              </h3>
-              <ul className="space-y-2 text-gray-300 ml-11">
-                <li>• Qualquer pessoa pode verificar a autenticidade</li>
-                <li>• Consulta pública na blockchain Polygon</li>
-                <li>• Histórico completo de eventos e assinaturas</li>
-                <li>• Explorer com logs de auditoria em tempo real</li>
-              </ul>
+              <h3 className="font-display text-2xl font-bold mb-6">3. Verificação e Auditoria</h3>
+              <div className="space-y-4 text-gray-300 leading-relaxed">
+                <p>
+                  Qualquer pessoa pode verificar a autenticidade de um documento por meio do QR code do certificado 
+                  ou do Explorer Blocktrust.
+                </p>
+                <p>
+                  A consulta pública exibe o status do NFT, o hash do documento e o histórico completo de eventos 
+                  diretamente na blockchain Polygon.
+                </p>
+                <p>
+                  O painel de auditoria oferece:
+                </p>
+                <ul className="list-disc list-inside ml-4 space-y-2">
+                  <li>Histórico de assinaturas e cancelamentos</li>
+                  <li>Registro de eventos on-chain (Minting, Proof, Failsafe, etc.)</li>
+                  <li>Logs em tempo real, com atualização automática.</li>
+                </ul>
+                <p>
+                  Cada ação é registrada de forma pública, imutável e auditável — transformando confiança em código.
+                </p>
+              </div>
             </div>
 
+            <hr className="border-white/20" />
+
+            {/* Protocolo de Emergência */}
             <div>
-              <h3 className="font-display text-xl font-bold mb-4 flex items-center">
-                <span className="bg-red-400 text-brand-navy w-8 h-8 rounded-full flex items-center justify-center mr-3">⚠</span>
-                Protocolo de Emergência
-              </h3>
-              <ul className="space-y-2 text-gray-300 ml-11">
-                <li>• Use senha de emergência em situações de coação</li>
-                <li>• Sistema gera assinatura fake indistinguível</li>
-                <li>• NFT é cancelado automaticamente e secretamente</li>
-                <li>• Todas as assinaturas futuras ficam inválidas</li>
-              </ul>
+              <h3 className="font-display text-2xl font-bold mb-6">Protocolo de Emergência (Failsafe)</h3>
+              <div className="space-y-4 text-gray-300 leading-relaxed">
+                <p>
+                  Em caso de coerção, fraude ou ameaça, o usuário pode acionar o modo de emergência com sua senha failsafe.
+                </p>
+                <p>
+                  O sistema gera uma assinatura fake visualmente idêntica à real, enganando o invasor.
+                </p>
+                <p>
+                  Simultaneamente, o NFT ativo é automaticamente marcado como inválido na blockchain, impedindo futuras 
+                  assinaturas e acionando o protocolo de segurança.
+                </p>
+                <p>
+                  O usuário pode, depois, refazer o KYC e emitir um novo NFT (v+1) para recuperar sua identidade digital.
+                </p>
+                <p>
+                  O NFT não é apagado nem removido — ele permanece registrado na blockchain, apenas marcado como inválido.
+                </p>
+                <p>
+                  Isso preserva a cadeia de auditoria simbiótica, garantindo rastreabilidade e transparência total ao longo do tempo.
+                </p>
+              </div>
             </div>
           </div>
         </div>
