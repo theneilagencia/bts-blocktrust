@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Shield, FileCheck, Lock, Globe } from 'lucide-react'
+import { Shield, FileCheck, Lock, Globe, Wallet, Key, AlertTriangle, FileSignature } from 'lucide-react'
 import Button from '../components/Button'
 
 export default function Home() {
@@ -9,6 +9,7 @@ export default function Home() {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <img src="/logo.png" alt="BTS Blocktrust" className="h-10" />
+            <span className="text-sm bg-brand-accent px-2 py-1 rounded">v1.4</span>
           </div>
           <div className="space-x-4">
             <Link to="/login">
@@ -24,11 +25,11 @@ export default function Home() {
       <div className="container-custom py-20">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="font-display text-5xl md:text-6xl font-bold mb-6">
-            Registro Blockchain de Documentos
+            Identidade Digital Soberana e Assinatura Blockchain
           </h1>
           <p className="text-xl text-gray-300 mb-12">
-            Sistema descentralizado para registro, assinatura e verificação de documentos 
-            com segurança blockchain e conformidade LGPD
+            Sistema completo de identidade verificada (KYC), carteira autocustodiada, 
+            NFT SoulBound e assinatura dupla (PGP + Blockchain) com protocolo de emergência
           </p>
 
           {/* Vídeo institucional */}
@@ -53,12 +54,53 @@ export default function Home() {
           </Link>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 mt-20">
+        {/* Módulos Principais */}
+        <div className="mt-20 mb-12">
+          <h2 className="font-display text-3xl font-bold text-center mb-12">
+            Módulos e Funcionalidades
+          </h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center hover:bg-white/20 transition">
+              <Wallet className="w-12 h-12 mx-auto mb-4 text-brand-accent" />
+              <h3 className="font-display text-lg font-bold mb-2">Carteira Proprietária</h3>
+              <p className="text-sm text-gray-300">
+                Geração e gerenciamento de chaves privadas secp256k1 com criptografia local
+              </p>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center hover:bg-white/20 transition">
+              <Shield className="w-12 h-12 mx-auto mb-4 text-brand-accent" />
+              <h3 className="font-display text-lg font-bold mb-2">NFT SoulBound</h3>
+              <p className="text-sm text-gray-300">
+                Identidade única não-transferível vinculada ao KYC com cancelamento automático
+              </p>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center hover:bg-white/20 transition">
+              <FileSignature className="w-12 h-12 mx-auto mb-4 text-brand-accent" />
+              <h3 className="font-display text-lg font-bold mb-2">Assinatura Dupla</h3>
+              <p className="text-sm text-gray-300">
+                PGP + Blockchain para máxima segurança e não-repúdio de documentos
+              </p>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center hover:bg-white/20 transition">
+              <AlertTriangle className="w-12 h-12 mx-auto mb-4 text-red-400" />
+              <h3 className="font-display text-lg font-bold mb-2">Protocolo Failsafe</h3>
+              <p className="text-sm text-gray-300">
+                Senha de emergência para situações de coação com cancelamento automático de NFT
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Funcionalidades Detalhadas */}
+        <div className="grid md:grid-cols-3 gap-8 mt-12">
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 text-center">
             <FileCheck className="w-12 h-12 mx-auto mb-4" />
-            <h3 className="font-display text-xl font-bold mb-2">Registro Seguro</h3>
+            <h3 className="font-display text-xl font-bold mb-2">KYC Integrado</h3>
             <p className="text-gray-300">
-              Registre documentos na blockchain Polygon com hash SHA-256
+              Verificação de identidade via Sumsub com liveness e mint automático de NFT
             </p>
           </div>
 
@@ -66,23 +108,102 @@ export default function Home() {
             <Lock className="w-12 h-12 mx-auto mb-4" />
             <h3 className="font-display text-xl font-bold mb-2">Privacidade Total</h3>
             <p className="text-gray-300">
-              Apenas o hash trafega. Seus documentos permanecem privados
+              Chaves privadas nunca saem do dispositivo. Criptografia AES-256 + PBKDF2
             </p>
           </div>
 
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 text-center">
             <Globe className="w-12 h-12 mx-auto mb-4" />
-            <h3 className="font-display text-xl font-bold mb-2">Verificação Global</h3>
+            <h3 className="font-display text-xl font-bold mb-2">Blockchain Polygon</h3>
             <p className="text-gray-300">
-              Verifique autenticidade instantaneamente via blockchain
+              Registro imutável e verificável em blockchain pública de baixo custo
             </p>
+          </div>
+        </div>
+
+        {/* Fluxos de Uso */}
+        <div className="mt-20 bg-white/5 backdrop-blur-sm rounded-2xl p-12">
+          <h2 className="font-display text-3xl font-bold text-center mb-8">
+            Como Funciona
+          </h2>
+          <div className="grid md:grid-cols-2 gap-8">
+            <div>
+              <h3 className="font-display text-xl font-bold mb-4 flex items-center">
+                <span className="bg-brand-accent text-brand-navy w-8 h-8 rounded-full flex items-center justify-center mr-3">1</span>
+                Cadastro e Verificação
+              </h3>
+              <ul className="space-y-2 text-gray-300 ml-11">
+                <li>• Crie conta com senha normal e senha de emergência</li>
+                <li>• Complete o processo de KYC (verificação de identidade)</li>
+                <li>• Sistema gera automaticamente sua carteira proprietária</li>
+                <li>• NFT SoulBound é mintado e vinculado à sua identidade</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-display text-xl font-bold mb-4 flex items-center">
+                <span className="bg-brand-accent text-brand-navy w-8 h-8 rounded-full flex items-center justify-center mr-3">2</span>
+                Assinatura de Documentos
+              </h3>
+              <ul className="space-y-2 text-gray-300 ml-11">
+                <li>• Importe sua chave pública PGP (opcional)</li>
+                <li>• Faça upload do documento para assinar</li>
+                <li>• Sistema valida seu NFT ativo na blockchain</li>
+                <li>• Assinatura dupla (PGP + ECDSA) é registrada on-chain</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-display text-xl font-bold mb-4 flex items-center">
+                <span className="bg-brand-accent text-brand-navy w-8 h-8 rounded-full flex items-center justify-center mr-3">3</span>
+                Verificação e Auditoria
+              </h3>
+              <ul className="space-y-2 text-gray-300 ml-11">
+                <li>• Qualquer pessoa pode verificar a autenticidade</li>
+                <li>• Consulta pública na blockchain Polygon</li>
+                <li>• Histórico completo de eventos e assinaturas</li>
+                <li>• Explorer com logs de auditoria em tempo real</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-display text-xl font-bold mb-4 flex items-center">
+                <span className="bg-red-400 text-brand-navy w-8 h-8 rounded-full flex items-center justify-center mr-3">⚠</span>
+                Protocolo de Emergência
+              </h3>
+              <ul className="space-y-2 text-gray-300 ml-11">
+                <li>• Use senha de emergência em situações de coação</li>
+                <li>• Sistema gera assinatura fake indistinguível</li>
+                <li>• NFT é cancelado automaticamente e secretamente</li>
+                <li>• Todas as assinaturas futuras ficam inválidas</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Tecnologias */}
+        <div className="mt-20">
+          <h2 className="font-display text-2xl font-bold text-center mb-8">
+            Tecnologias e Padrões
+          </h2>
+          <div className="flex flex-wrap justify-center gap-4">
+            <span className="bg-white/10 px-4 py-2 rounded-full text-sm">Polygon Mumbai</span>
+            <span className="bg-white/10 px-4 py-2 rounded-full text-sm">Solidity 0.8.20</span>
+            <span className="bg-white/10 px-4 py-2 rounded-full text-sm">Web3.py</span>
+            <span className="bg-white/10 px-4 py-2 rounded-full text-sm">OpenPGP</span>
+            <span className="bg-white/10 px-4 py-2 rounded-full text-sm">ECDSA secp256k1</span>
+            <span className="bg-white/10 px-4 py-2 rounded-full text-sm">AES-256</span>
+            <span className="bg-white/10 px-4 py-2 rounded-full text-sm">PBKDF2</span>
+            <span className="bg-white/10 px-4 py-2 rounded-full text-sm">SHA-256</span>
+            <span className="bg-white/10 px-4 py-2 rounded-full text-sm">EIP-191</span>
+            <span className="bg-white/10 px-4 py-2 rounded-full text-sm">Sumsub KYC</span>
           </div>
         </div>
       </div>
 
       <footer className="container-custom py-8 mt-20 border-t border-white/20">
         <p className="text-center text-gray-400">
-          2025 BTS Global Corp © Todos os direitos reservados
+          2025 BTS Global Corp © Todos os direitos reservados | Blocktrust v1.4
         </p>
       </footer>
     </div>
