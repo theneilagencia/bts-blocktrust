@@ -1,5 +1,5 @@
 """
-Rotas para verificação KYC com Sumsub
+Rotas para verificação KYC com Sumsub (SEM MODO MOCK)
 """
 from flask import Blueprint, request, jsonify
 from api.auth import token_required
@@ -25,7 +25,7 @@ kyc_bp = Blueprint('kyc', __name__)
 @token_required
 def init_kyc(current_user):
     """
-    Inicializa processo de KYC para o usuário
+    Inicializa processo de KYC para o usuário (MODO PRODUÇÃO - SEM MOCK)
     
     Returns:
         JSON com access token para o SDK do Sumsub
@@ -34,33 +34,12 @@ def init_kyc(current_user):
         # Valida credenciais do Sumsub
         is_valid, error_msg = validate_credentials()
         if not is_valid:
-            logger.warning(f"⚠️  Credenciais Sumsub inválidas: {error_msg}")
-            logger.warning("⚠️  Usando modo mock para KYC")
-            
-            # Modo mock: retorna token simulado
-            user_id = current_user['user_id']
-            mock_applicant_id = f"mock_applicant_{user_id}"
-            
-            # Atualiza banco com applicant_id mock
-            conn = get_db_connection()
-            cur = conn.cursor()
-            cur.execute("""
-                UPDATE users
-                SET applicant_id = %s, kyc_status = 'pending'
-                WHERE id = %s
-            """, (mock_applicant_id, user_id))
-            conn.commit()
-            cur.close()
-            conn.close()
-            
+            logger.error(f"❌ Credenciais Sumsub inválidas: {error_msg}")
             return jsonify({
-                'status': 'success',
-                'accessToken': 'mock_access_token_for_testing',
-                'applicantId': mock_applicant_id,
-                'expiresAt': '2025-12-31T23:59:59Z',
-                'mock_mode': True,
-                'message': 'Mock: KYC inicializado (API indisponível)'
-            }), 200
+                'error': 'Configuração inválida',
+                'message': 'Credenciais Sumsub não configuradas. Entre em contato com o suporte.',
+                'details': error_msg
+            }), 500
         
         user_id = current_user['user_id']
         user_email = current_user['email']
@@ -97,95 +76,66 @@ def init_kyc(current_user):
         
         # Se não tem applicant_id, cria um novo
         if not applicant_id:
-            logger.info(f"Criando applicant para usuário {user_id}")
+            logger.info(f"✅ Criando applicant para usuário {user_id}")
             
             # Criar applicant com tratamento de erro integrado
             result = create_applicant(user_id, user_email)
             
             # Verificar se houve erro
             if result.get('status') == 'error':
-                logger.error(f"❌ {result.get('type')}: {result.get('message')}")
-                logger.info(f"💡 Ação recomendada: {result.get('action')}")
+                error_type = result.get('type')
+                error_message = result.get('message')
+                error_action = result.get('action')
                 
-                # Usar modo mock
-                mock_applicant_id = f"mock_applicant_{user_id}"
-                logger.warning(f"🧩 Ativando modo mock: {mock_applicant_id}")
+                logger.error(f"❌ {error_type}: {error_message}")
+                logger.info(f"💡 Ação recomendada: {error_action}")
                 
-                cur.execute("""
-                    UPDATE users
-                    SET applicant_id = %s, kyc_status = 'pending'
-                    WHERE id = %s
-                """, (mock_applicant_id, user_id))
-                conn.commit()
                 cur.close()
                 conn.close()
                 
                 return jsonify({
-                    'status': 'success',
-                    'accessToken': 'mock_access_token_for_testing',
-                    'applicantId': mock_applicant_id,
-                    'expiresAt': '2025-12-31T23:59:59Z',
-                    'mock_mode': True,
-                    'error_type': result.get('type'),
-                    'message': f"Mock: {result.get('message')}"
-                }), 200
-            
-            # Verificar se é modo mock
-            elif result.get('status') == 'mock':
-                mock_applicant_id = result.get('applicant_id')
-                logger.warning(f"🧩 Modo mock ativado: {mock_applicant_id}")
-                
-                cur.execute("""
-                    UPDATE users
-                    SET applicant_id = %s, kyc_status = 'pending'
-                    WHERE id = %s
-                """, (mock_applicant_id, user_id))
-                conn.commit()
-                cur.close()
-                conn.close()
-                
-                return jsonify({
-                    'status': 'success',
-                    'accessToken': 'mock_access_token_for_testing',
-                    'applicantId': mock_applicant_id,
-                    'expiresAt': '2025-12-31T23:59:59Z',
-                    'mock_mode': True,
-                    'message': result.get('message')
-                }), 200
+                    'error': 'Falha ao criar applicant',
+                    'type': error_type,
+                    'message': error_message,
+                    'action': error_action
+                }), 500
             
             # Sucesso
             elif result.get('status') == 'success':
                 applicant_id = result.get('applicant_id')
                 applicant_data = result.get('data')
                 
+                logger.info(f"✅ Applicant criado com sucesso: {applicant_id}")
+                
                 # Atualiza banco de dados
                 cur.execute("""
                     UPDATE users
-                    SET applicant_id = %s, sumsub_data = %s
+                    SET applicant_id = %s, sumsub_data = %s, kyc_status = 'pending'
                     WHERE id = %s
                 """, (applicant_id, str(applicant_data), user_id))
                 conn.commit()
+            else:
+                cur.close()
+                conn.close()
+                return jsonify({
+                    'error': 'Resposta inesperada da API Sumsub',
+                    'details': result
+                }), 500
         
         # Gera access token para o SDK
         try:
+            logger.info(f"🔑 Gerando access token para usuário {user_id}")
             token_data = get_access_token(user_id)
+            logger.info(f"✅ Access token gerado com sucesso")
         except Exception as token_error:
-            # Se falhar ao gerar token (401), usar modo mock
-            if '401' in str(token_error) or 'Unauthorized' in str(token_error):
-                logger.warning("⚠️  Falha ao gerar token no Sumsub, usando modo mock")
-                cur.close()
-                conn.close()
-                
-                return jsonify({
-                    'status': 'success',
-                    'accessToken': 'mock_access_token_for_testing',
-                    'applicantId': applicant_id,
-                    'expiresAt': '2025-12-31T23:59:59Z',
-                    'mock_mode': True,
-                    'message': 'Mock: Token gerado (API indisponível)'
-                }), 200
-            else:
-                raise
+            logger.error(f"❌ Erro ao gerar access token: {str(token_error)}")
+            cur.close()
+            conn.close()
+            return jsonify({
+                'error': 'Falha ao gerar token de acesso',
+                'message': 'Não foi possível gerar token para o SDK Sumsub',
+                'details': str(token_error)
+            }), 500
         
         cur.close()
         conn.close()
@@ -194,36 +144,30 @@ def init_kyc(current_user):
             'status': 'success',
             'accessToken': token_data['token'],
             'applicantId': applicant_id,
-            'expiresAt': token_data['expiresAt']
+            'expiresAt': token_data['expiresAt'],
+            'mock_mode': False
         }), 200
         
     except Exception as e:
-        logger.error(f"Erro ao inicializar KYC: {str(e)}")
-        # Modo mock como último recurso
-        if '401' in str(e) or 'Unauthorized' in str(e):
-            logger.warning("⚠️  Erro 401 no KYC, usando modo mock")
-            return jsonify({
-                'status': 'success',
-                'accessToken': 'mock_access_token_for_testing',
-                'applicantId': f'mock_applicant_{current_user["user_id"]}',
-                'expiresAt': '2025-12-31T23:59:59Z',
-                'mock_mode': True,
-                'message': 'Mock: KYC inicializado (API indisponível)'
-            }), 200
-        return jsonify({'error': 'Erro ao inicializar KYC', 'details': str(e)}), 500
+        logger.error(f"💥 Erro ao inicializar KYC: {str(e)}")
+        return jsonify({
+            'error': 'Erro ao inicializar KYC',
+            'details': str(e)
+        }), 500
 
 @kyc_bp.route('/status', methods=['GET'])
 @token_required
 def get_kyc_status(current_user):
     """
-    Obtém status do KYC do usuário
+    Obtém status do KYC do usuário (MODO PRODUÇÃO - SEM MOCK)
     
     Returns:
-        JSON com status do KYC
+        JSON com status da verificação
     """
     try:
         user_id = current_user['user_id']
         
+        # Busca dados do usuário
         conn = get_db_connection()
         cur = conn.cursor()
         
@@ -237,78 +181,47 @@ def get_kyc_status(current_user):
         cur.close()
         conn.close()
         
-        if not user_data or not user_data['applicant_id']:
+        if not user_data:
+            return jsonify({'error': 'Usuário não encontrado'}), 404
+        
+        applicant_id = user_data['applicant_id']
+        
+        # Se não tem applicant_id, KYC não foi iniciado
+        if not applicant_id:
             return jsonify({
                 'status': 'not_started',
                 'message': 'KYC não iniciado'
             }), 200
         
-        applicant_id = user_data['applicant_id']
-        
-        # Se é applicant_id mock, retornar status mock
-        if applicant_id and applicant_id.startswith('mock_applicant_'):
-            logger.info(f"⚠️  Applicant mock detectado, retornando status mock")
-            return jsonify({
-                'status': 'pending',
-                'reviewStatus': 'pending',
-                'reviewAnswer': 'GREEN',
-                'rejectLabels': [],
-                'moderationComment': 'Mock: KYC em processamento (API indisponível)',
-                'updatedAt': user_data['kyc_updated_at'],
-                'mock_mode': True
-            }), 200
-        
-        # Busca status atualizado no Sumsub
+        # Busca status no Sumsub
         try:
+            logger.info(f"🔍 Buscando status do applicant {applicant_id}")
             status_data = get_applicant_status(applicant_id)
             parsed_status = parse_verification_status(status_data)
+            logger.info(f"✅ Status obtido: {parsed_status.get('status')}")
+            
+            return jsonify(parsed_status), 200
+            
         except Exception as status_error:
-            # Se falhar ao buscar status, retornar mock
-            if '401' in str(status_error) or 'Unauthorized' in str(status_error):
-                logger.warning("⚠️  Falha ao buscar status no Sumsub, usando modo mock")
-                return jsonify({
-                    'status': 'pending',
-                    'reviewStatus': 'pending',
-                    'reviewAnswer': 'GREEN',
-                    'rejectLabels': [],
-                    'moderationComment': 'Mock: KYC em processamento (API indisponível)',
-                    'updatedAt': user_data['kyc_updated_at'],
-                    'mock_mode': True
-                }), 200
-            else:
-                raise
-        
-        # Atualiza status no banco de dados
-        conn = get_db_connection()
-        cur = conn.cursor()
-        
-        cur.execute("""
-            UPDATE users
-            SET kyc_status = %s, kyc_updated_at = NOW()
-            WHERE id = %s
-        """, (parsed_status['status'], user_id))
-        conn.commit()
-        cur.close()
-        conn.close()
-        
-        return jsonify({
-            'status': parsed_status['status'],
-            'reviewStatus': parsed_status['reviewStatus'],
-            'reviewAnswer': parsed_status['reviewAnswer'],
-            'rejectLabels': parsed_status['rejectLabels'],
-            'moderationComment': parsed_status['moderationComment'],
-            'updatedAt': user_data['kyc_updated_at']
-        }), 200
+            logger.error(f"❌ Erro ao buscar status: {str(status_error)}")
+            return jsonify({
+                'error': 'Falha ao buscar status',
+                'message': 'Não foi possível obter status do KYC',
+                'details': str(status_error)
+            }), 500
         
     except Exception as e:
-        logger.error(f"Erro ao obter status do KYC: {str(e)}")
-        return jsonify({'error': 'Erro ao obter status do KYC', 'details': str(e)}), 500
+        logger.error(f"💥 Erro ao obter status do KYC: {str(e)}")
+        return jsonify({
+            'error': 'Erro ao obter status do KYC',
+            'details': str(e)
+        }), 500
 
 @kyc_bp.route('/liveness', methods=['GET'])
 @token_required
 def get_liveness_status(current_user):
     """
-    Obtém status do liveness check do usuário
+    Obtém status do liveness check (MODO PRODUÇÃO - SEM MOCK)
     
     Returns:
         JSON com status do liveness check
@@ -316,6 +229,7 @@ def get_liveness_status(current_user):
     try:
         user_id = current_user['user_id']
         
+        # Busca applicant_id do usuário
         conn = get_db_connection()
         cur = conn.cursor()
         
@@ -329,61 +243,61 @@ def get_liveness_status(current_user):
         cur.close()
         conn.close()
         
-        if not user_data or not user_data['applicant_id']:
-            return jsonify({
-                'completed': False,
-                'passed': False,
-                'message': 'KYC não iniciado'
-            }), 200
+        if not user_data:
+            return jsonify({'error': 'Usuário não encontrado'}), 404
         
         applicant_id = user_data['applicant_id']
         
-        # Se é applicant_id mock, retornar liveness mock
-        if applicant_id and applicant_id.startswith('mock_applicant_'):
-            logger.info(f"⚠️  Applicant mock detectado, retornando liveness mock")
+        if not applicant_id:
             return jsonify({
-                'completed': True,
-                'passed': True,
-                'message': 'Mock: Liveness check aprovado (API indisponível)',
-                'mock_mode': True
+                'completed': False,
+                'message': 'KYC não iniciado'
             }), 200
         
-        # Buscar liveness status no Sumsub
+        # Busca status do liveness check
         try:
+            logger.info(f"🔍 Buscando liveness status do applicant {applicant_id}")
             liveness_status = get_liveness_check_status(applicant_id)
+            logger.info(f"✅ Liveness status obtido")
+            
+            return jsonify(liveness_status), 200
+            
         except Exception as liveness_error:
-            # Se falhar, retornar mock
-            if '401' in str(liveness_error) or 'Unauthorized' in str(liveness_error):
-                logger.warning("⚠️  Falha ao buscar liveness no Sumsub, usando modo mock")
-                return jsonify({
-                    'completed': True,
-                    'passed': True,
-                    'message': 'Mock: Liveness check aprovado (API indisponível)',
-                    'mock_mode': True
-                }), 200
-            else:
-                raise
-        
-        return jsonify(liveness_status), 200
+            logger.error(f"❌ Erro ao buscar liveness: {str(liveness_error)}")
+            return jsonify({
+                'error': 'Falha ao buscar liveness',
+                'message': 'Não foi possível obter status do liveness check',
+                'details': str(liveness_error)
+            }), 500
         
     except Exception as e:
-        logger.error(f"Erro ao obter status do liveness check: {str(e)}")
-        return jsonify({'error': 'Erro ao obter status do liveness check', 'details': str(e)}), 500
+        logger.error(f"💥 Erro ao obter liveness status: {str(e)}")
+        return jsonify({
+            'error': 'Erro ao obter liveness status',
+            'details': str(e)
+        }), 500
+
+
+
 
 @kyc_bp.route('/webhook', methods=['POST'])
-def kyc_webhook():
+def webhook():
     """
-    Webhook para receber atualizações do Sumsub
+    Webhook para receber eventos do Sumsub (MODO PRODUÇÃO)
+    
+    Eventos suportados:
+    - applicantReviewed: KYC aprovado/rejeitado
+    - applicantPending: KYC em análise
     
     Returns:
-        JSON com confirmação de recebimento
+        JSON com status do processamento
     """
     try:
         # Verifica assinatura do webhook
         signature = request.headers.get('X-Payload-Digest')
         
         if not signature:
-            logger.warning("Webhook sem assinatura")
+            logger.warning("❌ Webhook sem assinatura")
             return jsonify({'error': 'Assinatura ausente'}), 401
         
         request_body = request.get_data()
@@ -392,22 +306,11 @@ def kyc_webhook():
         signature_valid = verify_webhook_signature(request_body, signature)
         
         if not signature_valid:
-            logger.error(f"❌ Assinatura HMAC inválida no webhook: {signature[:20]}...")
-            logger.debug(f"Body recebido (primeiros 200 chars): {request_body[:200]}")
-            
-            # Verificar se estamos em modo de desenvolvimento local (BYPASS_WEBHOOK_VALIDATION)
-            import os
-            bypass_validation = os.getenv('BYPASS_WEBHOOK_VALIDATION', 'false').lower() == 'true'
-            
-            if bypass_validation:
-                logger.warning("⚠️  BYPASS_WEBHOOK_VALIDATION ativado: aceitando webhook com assinatura inválida")
-                logger.warning("🚨 ATENÇÃO: Isso não deve estar ativado em produção!")
-            else:
-                # PRODUÇÃO: Rejeitar webhook com assinatura inválida
-                return jsonify({
-                    'error': 'Assinatura HMAC inválida',
-                    'message': 'Webhook rejeitado por falha na validação de segurança'
-                }), 403
+            logger.error(f"❌ Assinatura HMAC inválida no webhook")
+            return jsonify({
+                'error': 'Assinatura HMAC inválida',
+                'message': 'Webhook rejeitado por falha na validação de segurança'
+            }), 403
         
         # Processa evento
         data = request.get_json()
@@ -418,7 +321,7 @@ def kyc_webhook():
         review_status = data.get('reviewStatus')
         review_result = data.get('reviewResult', {})
         
-        logger.info(f"Webhook recebido: {event_type} para applicant {applicant_id}")
+        logger.info(f"✅ Webhook recebido: {event_type} para applicant {applicant_id}")
         
         # Atualiza status no banco de dados
         if external_user_id and review_status:
@@ -440,7 +343,7 @@ def kyc_webhook():
             cur.close()
             conn.close()
             
-            logger.info(f"Status KYC atualizado para usuário {external_user_id}: {parsed_status['status']}")
+            logger.info(f"✅ Status KYC atualizado para usuário {external_user_id}: {parsed_status['status']}")
             
             # Se KYC foi aprovado, iniciar processo de mint de NFT
             if parsed_status['status'] == 'approved':
@@ -488,7 +391,7 @@ def kyc_webhook():
         return jsonify({'status': 'received'}), 200
         
     except Exception as e:
-        logger.error(f"Erro ao processar webhook: {str(e)}")
+        logger.error(f"💥 Erro ao processar webhook: {str(e)}")
         return jsonify({'error': 'Erro ao processar webhook', 'details': str(e)}), 500
 
 @kyc_bp.route('/data', methods=['GET'])
@@ -524,11 +427,23 @@ def get_kyc_data(current_user):
             return jsonify({'error': 'KYC não iniciado'}), 404
         
         applicant_id = user_data['applicant_id']
-        applicant_data = get_applicant_data(applicant_id)
         
-        return jsonify(applicant_data), 200
+        try:
+            logger.info(f"🔍 Buscando dados do applicant {applicant_id}")
+            applicant_data = get_applicant_data(applicant_id)
+            logger.info(f"✅ Dados obtidos com sucesso")
+            
+            return jsonify(applicant_data), 200
+            
+        except Exception as data_error:
+            logger.error(f"❌ Erro ao buscar dados: {str(data_error)}")
+            return jsonify({
+                'error': 'Falha ao buscar dados',
+                'message': 'Não foi possível obter dados do applicant',
+                'details': str(data_error)
+            }), 500
         
     except Exception as e:
-        logger.error(f"Erro ao obter dados do KYC: {str(e)}")
+        logger.error(f"💥 Erro ao obter dados do KYC: {str(e)}")
         return jsonify({'error': 'Erro ao obter dados do KYC', 'details': str(e)}), 500
 

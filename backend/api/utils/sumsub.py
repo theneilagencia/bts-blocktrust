@@ -188,13 +188,11 @@ def create_applicant(external_user_id, email, level_name=None):
     
     except Exception as e:
         logger.error(f"💥 ERRO DESCONHECIDO: {str(e)}")
-        mock_id = f"mock_applicant_{external_user_id}"
-        logger.warning(f"🧩 Usando modo mock: {mock_id}")
         return {
-            'status': 'mock',
-            'applicant_id': mock_id,
-            'mock_mode': True,
-            'message': 'Erro genérico tratado — fallback mock ativado.'
+            'status': 'error',
+            'type': 'UNKNOWN_ERROR',
+            'message': str(e),
+            'action': 'Erro inesperado ao criar applicant. Verifique logs do servidor.'
         }
 
 def get_access_token(external_user_id, level_name=None, ttl_in_secs=600):
