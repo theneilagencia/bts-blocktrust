@@ -43,18 +43,18 @@ export default function Home() {
   const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0.8])
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gradient-to-br from-brand-navy to-brand-neutral">
       {/* Navigation */}
       <motion.nav 
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ type: "spring", stiffness: 100, damping: 20 }}
-        className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-md border-b border-gray-200 z-50"
+        className="fixed top-0 left-0 right-0 bg-brand-navy/80 backdrop-blur-md border-b border-gray-700 z-50"
       >
         <div className="container-custom py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <img src="/logo-black.png" alt="BTS Blocktrust" className="h-8" />
+              <img src="/logo.png" alt="BTS Blocktrust" className="h-8" />
               <span className="text-xs bg-brand-blue text-white px-2 py-1 rounded-full font-medium">v1.4</span>
             </div>
             <div className="flex items-center space-x-3">
@@ -70,7 +70,7 @@ export default function Home() {
       </motion.nav>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 bg-gradient-to-b from-gray-50 to-white overflow-hidden">
+      <section className="pt-32 pb-20 overflow-hidden">
         <div className="container-custom">
           <motion.div 
             style={{ y: heroY, opacity: heroOpacity }}
@@ -81,7 +81,7 @@ export default function Home() {
               animate="visible"
               variants={fadeInUp}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight"
+              className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight"
             >
               Identidade Digital Soberana e Assinatura Blockchain
             </motion.h1>
@@ -90,7 +90,7 @@ export default function Home() {
               animate="visible"
               variants={fadeInUp}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="text-lg md:text-xl text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed"
+              className="text-lg md:text-xl text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed"
             >
               Sistema completo de identidade verificada (KYC), carteira autocustodiada, 
               NFT SoulBound e assinatura dupla (PGP + Blockchain) com protocolo de emergência
@@ -136,7 +136,7 @@ export default function Home() {
       </section>
 
       {/* Features Grid */}
-      <section className="py-20 bg-white">
+      <section className="py-20">
         <div className="container-custom">
           <motion.div 
             initial="hidden"
@@ -146,10 +146,10 @@ export default function Home() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">
               Módulos e Funcionalidades
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-300 max-w-2xl mx-auto">
               Tecnologia de ponta para garantir segurança, privacidade e controle total da sua identidade digital
             </p>
           </motion.div>
@@ -165,7 +165,7 @@ export default function Home() {
             <motion.div 
               variants={scaleIn}
               whileHover={{ y: -8, transition: { duration: 0.2 } }}
-              className="group bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-xl hover:border-brand-blue transition-all duration-300"
+              className="group bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:shadow-xl hover:border-brand-blue transition-all duration-300"
             >
               <motion.div 
                 whileHover={{ scale: 1.1, rotate: 5 }}
@@ -174,8 +174,8 @@ export default function Home() {
               >
                 <Wallet className="w-7 h-7 text-brand-blue group-hover:text-white transition-colors" />
               </motion.div>
-              <h3 className="font-display text-lg font-bold text-gray-900 mb-3">Carteira Proprietária</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">
+              <h3 className="font-display text-lg font-bold text-white mb-3">Carteira Proprietária</h3>
+              <p className="text-sm text-gray-400 leading-relaxed">
                 Geração e gerenciamento de chaves privadas secp256k1 com criptografia local
               </p>
             </motion.div>
@@ -184,7 +184,7 @@ export default function Home() {
             <motion.div 
               variants={scaleIn}
               whileHover={{ y: -8, transition: { duration: 0.2 } }}
-              className="group bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-xl hover:border-brand-blue transition-all duration-300"
+              className="group bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:shadow-xl hover:border-brand-blue transition-all duration-300"
             >
               <motion.div 
                 whileHover={{ scale: 1.1, rotate: 5 }}
@@ -193,8 +193,8 @@ export default function Home() {
               >
                 <Shield className="w-7 h-7 text-brand-blue group-hover:text-white transition-colors" />
               </motion.div>
-              <h3 className="font-display text-lg font-bold text-gray-900 mb-3">NFT SoulBound</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">
+              <h3 className="font-display text-lg font-bold text-white mb-3">NFT SoulBound</h3>
+              <p className="text-sm text-gray-400 leading-relaxed">
                 Identidade única não-transferível vinculada ao KYC com cancelamento automático
               </p>
             </motion.div>
@@ -203,7 +203,7 @@ export default function Home() {
             <motion.div 
               variants={scaleIn}
               whileHover={{ y: -8, transition: { duration: 0.2 } }}
-              className="group bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-xl hover:border-brand-blue transition-all duration-300"
+              className="group bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:shadow-xl hover:border-brand-blue transition-all duration-300"
             >
               <motion.div 
                 whileHover={{ scale: 1.1, rotate: 5 }}
@@ -212,8 +212,8 @@ export default function Home() {
               >
                 <FileSignature className="w-7 h-7 text-brand-blue group-hover:text-white transition-colors" />
               </motion.div>
-              <h3 className="font-display text-lg font-bold text-gray-900 mb-3">Assinatura Dupla</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">
+              <h3 className="font-display text-lg font-bold text-white mb-3">Assinatura Dupla</h3>
+              <p className="text-sm text-gray-400 leading-relaxed">
                 PGP + Blockchain para máxima segurança e não-repúdio de documentos
               </p>
             </motion.div>
@@ -222,7 +222,7 @@ export default function Home() {
             <motion.div 
               variants={scaleIn}
               whileHover={{ y: -8, transition: { duration: 0.2 } }}
-              className="group bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-xl hover:border-red-500 transition-all duration-300"
+              className="group bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:shadow-xl hover:border-red-500 transition-all duration-300"
             >
               <motion.div 
                 whileHover={{ scale: 1.1, rotate: 5 }}
@@ -231,8 +231,8 @@ export default function Home() {
               >
                 <AlertTriangle className="w-7 h-7 text-red-500 group-hover:text-white transition-colors" />
               </motion.div>
-              <h3 className="font-display text-lg font-bold text-gray-900 mb-3">Protocolo Failsafe</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">
+              <h3 className="font-display text-lg font-bold text-white mb-3">Protocolo Failsafe</h3>
+              <p className="text-sm text-gray-400 leading-relaxed">
                 Senha de emergência para situações de coação com cancelamento automático de NFT
               </p>
             </motion.div>
@@ -254,8 +254,8 @@ export default function Home() {
               >
                 <FileCheck className="w-8 h-8 text-brand-blue" />
               </motion.div>
-              <h3 className="font-display text-xl font-bold text-gray-900 mb-3">KYC Integrado</h3>
-              <p className="text-gray-600 leading-relaxed">
+              <h3 className="font-display text-xl font-bold text-white mb-3">KYC Integrado</h3>
+              <p className="text-gray-300 leading-relaxed">
                 Verificação de identidade via KYC com liveness e mint automático de NFT
               </p>
             </motion.div>
@@ -268,8 +268,8 @@ export default function Home() {
               >
                 <Lock className="w-8 h-8 text-brand-blue" />
               </motion.div>
-              <h3 className="font-display text-xl font-bold text-gray-900 mb-3">Privacidade Total</h3>
-              <p className="text-gray-600 leading-relaxed">
+              <h3 className="font-display text-xl font-bold text-white mb-3">Privacidade Total</h3>
+              <p className="text-gray-300 leading-relaxed">
                 Chaves privadas nunca saem do dispositivo. Criptografia AES-256 + PBKDF2
               </p>
             </motion.div>
@@ -282,8 +282,8 @@ export default function Home() {
               >
                 <Globe className="w-8 h-8 text-brand-blue" />
               </motion.div>
-              <h3 className="font-display text-xl font-bold text-gray-900 mb-3">Blockchain Polygon</h3>
-              <p className="text-gray-600 leading-relaxed">
+              <h3 className="font-display text-xl font-bold text-white mb-3">Blockchain Polygon</h3>
+              <p className="text-gray-300 leading-relaxed">
                 Registro imutável e verificável em blockchain pública de baixo custo
               </p>
             </motion.div>
@@ -292,7 +292,7 @@ export default function Home() {
       </section>
 
       {/* How It Works Section - CARDS HORIZONTAIS */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20">
         <div className="container-custom">
           <motion.div 
             initial="hidden"
@@ -302,10 +302,10 @@ export default function Home() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">
               Como Funciona o Blocktrust
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-300 max-w-2xl mx-auto">
               Processo simples e seguro em três etapas principais
             </p>
           </motion.div>
@@ -322,7 +322,7 @@ export default function Home() {
               variants={scaleIn}
               whileHover={{ y: -8, scale: 1.02 }}
               transition={{ type: "spring", stiffness: 300 }}
-              className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl border border-gray-200 hover:border-brand-blue transition-all duration-300"
+              className="group bg-white/10 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-2xl border border-white/20 hover:border-brand-blue transition-all duration-300"
             >
               <motion.div 
                 whileHover={{ scale: 1.1, rotate: 5 }}
@@ -359,7 +359,7 @@ export default function Home() {
               variants={scaleIn}
               whileHover={{ y: -8, scale: 1.02 }}
               transition={{ type: "spring", stiffness: 300 }}
-              className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl border border-gray-200 hover:border-brand-blue transition-all duration-300"
+              className="group bg-white/10 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-2xl border border-white/20 hover:border-brand-blue transition-all duration-300"
             >
               <motion.div 
                 whileHover={{ scale: 1.1, rotate: 5 }}
@@ -407,7 +407,7 @@ export default function Home() {
               variants={scaleIn}
               whileHover={{ y: -8, scale: 1.02 }}
               transition={{ type: "spring", stiffness: 300 }}
-              className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl border border-gray-200 hover:border-brand-blue transition-all duration-300"
+              className="group bg-white/10 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-2xl border border-white/20 hover:border-brand-blue transition-all duration-300"
             >
               <motion.div 
                 whileHover={{ scale: 1.1, rotate: 5 }}
@@ -456,7 +456,7 @@ export default function Home() {
       </section>
 
       {/* Failsafe Protocol Section - COM PULSAÇÃO */}
-      <section className="py-20 bg-gradient-to-br from-gray-100 via-blue-50 to-gray-100">
+      <section className="py-20 bg-gradient-to-br from-red-900/20 via-orange-900/20 to-red-900/20">
         <div className="container-custom">
           <motion.div 
             initial="hidden"
@@ -488,7 +488,7 @@ export default function Home() {
                 </div>
               </motion.div>
               <div>
-                <h2 className="font-display text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">
                   Protocolo de Emergência (Failsafe)
                 </h2>
                 <p className="text-lg text-gray-700 leading-relaxed">
@@ -502,9 +502,9 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="bg-white rounded-2xl p-8 md:p-10 shadow-xl border border-gray-200 hover:shadow-2xl transition-shadow duration-300"
+              className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 md:p-10 shadow-xl border border-white/20 hover:shadow-2xl transition-shadow duration-300"
             >
-              <div className="space-y-6 text-gray-700 leading-relaxed">
+              <div className="space-y-6 text-gray-300 leading-relaxed">
                 <p>
                   Em caso de <strong>coerção, fraude ou ameaça</strong>, o usuário pode acionar o modo de emergência com sua <strong>senha failsafe</strong>.
                 </p>
