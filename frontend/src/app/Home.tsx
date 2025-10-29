@@ -181,24 +181,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Tecnologias */}
-        <div className="mt-20">
-          <h2 className="font-display text-2xl font-bold text-center mb-8">
-            Tecnologias e Padrões
-          </h2>
-          <div className="flex flex-wrap justify-center gap-4">
-            <span className="bg-white/10 px-4 py-2 rounded-full text-sm">Polygon Mumbai</span>
-            <span className="bg-white/10 px-4 py-2 rounded-full text-sm">Solidity 0.8.20</span>
-            <span className="bg-white/10 px-4 py-2 rounded-full text-sm">Web3.py</span>
-            <span className="bg-white/10 px-4 py-2 rounded-full text-sm">OpenPGP</span>
-            <span className="bg-white/10 px-4 py-2 rounded-full text-sm">ECDSA secp256k1</span>
-            <span className="bg-white/10 px-4 py-2 rounded-full text-sm">AES-256</span>
-            <span className="bg-white/10 px-4 py-2 rounded-full text-sm">PBKDF2</span>
-            <span className="bg-white/10 px-4 py-2 rounded-full text-sm">SHA-256</span>
-            <span className="bg-white/10 px-4 py-2 rounded-full text-sm">EIP-191</span>
-            <span className="bg-white/10 px-4 py-2 rounded-full text-sm">Sumsub KYC</span>
-          </div>
-        </div>
+
       </div>
 
       <footer className="container-custom py-8 mt-20 border-t border-white/20">
