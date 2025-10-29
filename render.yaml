@@ -1,11 +1,12 @@
 services:
+  # Web Service - API Principal
   - type: web
     name: bts-blocktrust
     env: python
     plan: starter
     region: oregon
     buildCommand: bash build.sh
-    startCommand: cd backend && python app.py
+    startCommand: cd backend && gunicorn app:app --bind 0.0.0.0:$PORT --timeout 120
     envVars:
       - key: DATABASE_URL
         sync: false
@@ -41,4 +42,76 @@ services:
         value: "vinicius.debian@btsglobalcorp.com"
       - key: PORT
         value: "10000"
+      - key: NETWORK
+        sync: false
+      - key: POLYGON_RPC_URL
+        sync: false
+      - key: DEPLOYER_PRIVATE_KEY
+        sync: false
+      - key: IDENTITY_NFT_ADDRESS
+        sync: false
+      - key: PROOF_REGISTRY_ADDRESS
+        sync: false
+      - key: FAILSAFE_ADDRESS
+        sync: false
+      - key: MOCK_MODE
+        value: "false"
+      - key: SLO_LATENCY_MS
+        value: "800"
+      - key: SLO_UPTIME_TARGET
+        value: "99.5"
+
+  # Background Worker - Blockchain Event Listener
+  - type: worker
+    name: bts-blocktrust-listener
+    env: python
+    plan: starter
+    region: oregon
+    buildCommand: bash build.sh
+    startCommand: cd backend && python3 listener.py
+    envVars:
+      - key: DATABASE_URL
+        fromService:
+          name: bts-blocktrust
+          type: web
+          envVarKey: DATABASE_URL
+      - key: POLYGON_RPC_URL
+        fromService:
+          name: bts-blocktrust
+          type: web
+          envVarKey: POLYGON_RPC_URL
+      - key: LISTENER_POLL_INTERVAL
+        value: "15"
+
+  # Background Worker - System Monitor
+  - type: worker
+    name: bts-blocktrust-monitor
+    env: python
+    plan: starter
+    region: oregon
+    buildCommand: bash build.sh
+    startCommand: cd backend && python3 -m monitor.runner
+    envVars:
+      - key: DATABASE_URL
+        fromService:
+          name: bts-blocktrust
+          type: web
+          envVarKey: DATABASE_URL
+      - key: MONITOR_CHECK_INTERVAL
+        value: "60"
+      - key: SLO_UPTIME_TARGET
+        fromService:
+          name: bts-blocktrust
+          type: web
+          envVarKey: SLO_UPTIME_TARGET
+      - key: SLO_LATENCY_MS
+        fromService:
+          name: bts-blocktrust
+          type: web
+          envVarKey: SLO_LATENCY_MS
+      - key: ALERT_WEBHOOK_URL
+        fromService:
+          name: bts-blocktrust
+          type: web
+          envVarKey: ALERT_WEBHOOK_URL
 
